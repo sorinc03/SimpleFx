@@ -17,12 +17,21 @@
 		B5AAA9E316E206A5007FB2FF /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B5AAA9E216E206A5007FB2FF /* Default@2x.png */; };
 		B5AAA9E516E206A5007FB2FF /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B5AAA9E416E206A5007FB2FF /* Default-568h@2x.png */; };
 		B5AAA9E816E206A5007FB2FF /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B5AAA9E616E206A5007FB2FF /* MainStoryboard.storyboard */; };
-		B5AAA9EB16E206A5007FB2FF /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AAA9EA16E206A5007FB2FF /* ViewController.m */; };
+		B5AAA9EB16E206A5007FB2FF /* ConverterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AAA9EA16E206A5007FB2FF /* ConverterViewController.m */; };
 		B5AAA9F316E206A5007FB2FF /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5AAA9F216E206A5007FB2FF /* SenTestingKit.framework */; };
 		B5AAA9F416E206A5007FB2FF /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5AAA9CE16E206A5007FB2FF /* UIKit.framework */; };
 		B5AAA9F516E206A5007FB2FF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5AAA9D016E206A5007FB2FF /* Foundation.framework */; };
 		B5AAA9FD16E206A5007FB2FF /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B5AAA9FB16E206A5007FB2FF /* InfoPlist.strings */; };
 		B5AAAA0016E206A5007FB2FF /* CurrencyConverterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AAA9FF16E206A5007FB2FF /* CurrencyConverterTests.m */; };
+		B5AAAA0F16E25FB2007FB2FF /* CurrencyCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AAAA0E16E25FB2007FB2FF /* CurrencyCell.m */; };
+		B5AAAA1A16E2695C007FB2FF /* JPY.png in Resources */ = {isa = PBXBuildFile; fileRef = B5AAAA1916E2695C007FB2FF /* JPY.png */; };
+		B5AAAA1C16E26964007FB2FF /* GBP.png in Resources */ = {isa = PBXBuildFile; fileRef = B5AAAA1B16E26964007FB2FF /* GBP.png */; };
+		B5AAAA2216E26B09007FB2FF /* AED.png in Resources */ = {isa = PBXBuildFile; fileRef = B5AAAA1D16E26B09007FB2FF /* AED.png */; };
+		B5AAAA2316E26B09007FB2FF /* CAD.png in Resources */ = {isa = PBXBuildFile; fileRef = B5AAAA1E16E26B09007FB2FF /* CAD.png */; };
+		B5AAAA2516E26B09007FB2FF /* INR.png in Resources */ = {isa = PBXBuildFile; fileRef = B5AAAA2016E26B09007FB2FF /* INR.png */; };
+		B5AAAA2616E26B09007FB2FF /* USD.png in Resources */ = {isa = PBXBuildFile; fileRef = B5AAAA2116E26B09007FB2FF /* USD.png */; };
+		B5AAAA2816E26B30007FB2FF /* EUR.png in Resources */ = {isa = PBXBuildFile; fileRef = B5AAAA2716E26B30007FB2FF /* EUR.png */; };
+		B5AAAA2A16E26BD1007FB2FF /* AUD.png in Resources */ = {isa = PBXBuildFile; fileRef = B5AAAA2916E26BD1007FB2FF /* AUD.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,14 +59,24 @@
 		B5AAA9E216E206A5007FB2FF /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		B5AAA9E416E206A5007FB2FF /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		B5AAA9E716E206A5007FB2FF /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
-		B5AAA9E916E206A5007FB2FF /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		B5AAA9EA16E206A5007FB2FF /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		B5AAA9E916E206A5007FB2FF /* ConverterViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ConverterViewController.h; sourceTree = "<group>"; };
+		B5AAA9EA16E206A5007FB2FF /* ConverterViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ConverterViewController.m; sourceTree = "<group>"; };
 		B5AAA9F116E206A5007FB2FF /* CurrencyConverterTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CurrencyConverterTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5AAA9F216E206A5007FB2FF /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		B5AAA9FA16E206A5007FB2FF /* CurrencyConverterTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "CurrencyConverterTests-Info.plist"; sourceTree = "<group>"; };
 		B5AAA9FC16E206A5007FB2FF /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B5AAA9FE16E206A5007FB2FF /* CurrencyConverterTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurrencyConverterTests.h; sourceTree = "<group>"; };
 		B5AAA9FF16E206A5007FB2FF /* CurrencyConverterTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CurrencyConverterTests.m; sourceTree = "<group>"; };
+		B5AAAA0D16E25FB2007FB2FF /* CurrencyCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurrencyCell.h; sourceTree = "<group>"; };
+		B5AAAA0E16E25FB2007FB2FF /* CurrencyCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurrencyCell.m; sourceTree = "<group>"; };
+		B5AAAA1916E2695C007FB2FF /* JPY.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = JPY.png; sourceTree = "<group>"; };
+		B5AAAA1B16E26964007FB2FF /* GBP.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GBP.png; sourceTree = "<group>"; };
+		B5AAAA1D16E26B09007FB2FF /* AED.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AED.png; sourceTree = "<group>"; };
+		B5AAAA1E16E26B09007FB2FF /* CAD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CAD.png; sourceTree = "<group>"; };
+		B5AAAA2016E26B09007FB2FF /* INR.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = INR.png; sourceTree = "<group>"; };
+		B5AAAA2116E26B09007FB2FF /* USD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = USD.png; sourceTree = "<group>"; };
+		B5AAAA2716E26B30007FB2FF /* EUR.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = EUR.png; sourceTree = "<group>"; };
+		B5AAAA2916E26BD1007FB2FF /* AUD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AUD.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,11 +136,14 @@
 		B5AAA9D416E206A5007FB2FF /* CurrencyConverter */ = {
 			isa = PBXGroup;
 			children = (
+				B5AAAA1016E26433007FB2FF /* Flags */,
 				B5AAA9DD16E206A5007FB2FF /* AppDelegate.h */,
 				B5AAA9DE16E206A5007FB2FF /* AppDelegate.m */,
 				B5AAA9E616E206A5007FB2FF /* MainStoryboard.storyboard */,
-				B5AAA9E916E206A5007FB2FF /* ViewController.h */,
-				B5AAA9EA16E206A5007FB2FF /* ViewController.m */,
+				B5AAA9E916E206A5007FB2FF /* ConverterViewController.h */,
+				B5AAA9EA16E206A5007FB2FF /* ConverterViewController.m */,
+				B5AAAA0D16E25FB2007FB2FF /* CurrencyCell.h */,
+				B5AAAA0E16E25FB2007FB2FF /* CurrencyCell.m */,
 				B5AAA9D516E206A5007FB2FF /* Supporting Files */,
 			);
 			path = CurrencyConverter;
@@ -158,6 +180,21 @@
 				B5AAA9FB16E206A5007FB2FF /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		B5AAAA1016E26433007FB2FF /* Flags */ = {
+			isa = PBXGroup;
+			children = (
+				B5AAAA2916E26BD1007FB2FF /* AUD.png */,
+				B5AAAA2716E26B30007FB2FF /* EUR.png */,
+				B5AAAA1D16E26B09007FB2FF /* AED.png */,
+				B5AAAA1E16E26B09007FB2FF /* CAD.png */,
+				B5AAAA2016E26B09007FB2FF /* INR.png */,
+				B5AAAA2116E26B09007FB2FF /* USD.png */,
+				B5AAAA1B16E26964007FB2FF /* GBP.png */,
+				B5AAAA1916E2695C007FB2FF /* JPY.png */,
+			);
+			name = Flags;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -236,6 +273,14 @@
 				B5AAA9E316E206A5007FB2FF /* Default@2x.png in Resources */,
 				B5AAA9E516E206A5007FB2FF /* Default-568h@2x.png in Resources */,
 				B5AAA9E816E206A5007FB2FF /* MainStoryboard.storyboard in Resources */,
+				B5AAAA1A16E2695C007FB2FF /* JPY.png in Resources */,
+				B5AAAA1C16E26964007FB2FF /* GBP.png in Resources */,
+				B5AAAA2216E26B09007FB2FF /* AED.png in Resources */,
+				B5AAAA2316E26B09007FB2FF /* CAD.png in Resources */,
+				B5AAAA2516E26B09007FB2FF /* INR.png in Resources */,
+				B5AAAA2616E26B09007FB2FF /* USD.png in Resources */,
+				B5AAAA2816E26B30007FB2FF /* EUR.png in Resources */,
+				B5AAAA2A16E26BD1007FB2FF /* AUD.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -272,7 +317,8 @@
 			files = (
 				B5AAA9DB16E206A5007FB2FF /* main.m in Sources */,
 				B5AAA9DF16E206A5007FB2FF /* AppDelegate.m in Sources */,
-				B5AAA9EB16E206A5007FB2FF /* ViewController.m in Sources */,
+				B5AAA9EB16E206A5007FB2FF /* ConverterViewController.m in Sources */,
+				B5AAAA0F16E25FB2007FB2FF /* CurrencyCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
