@@ -111,20 +111,9 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     CurrencyCell *cell = [tableView dequeueReusableCellWithIdentifier:@"CurrencyExchange"];
     
-    NSString *currencyPair = [self.currencyPairs objectAtIndex:indexPath.row];
-    cell.leftCurrency.text = [currencyPair substringToIndex:3];
-    cell.rightCurrency.text = [currencyPair substringFromIndex:3];
-    
-    CGFloat rate = ((NSString *)[self.forex valueForKey:currencyPair]).floatValue;
-    
-    cell.leftRightExRate.text = [NSString stringWithFormat:@"%.2f", rate];
-    
-    CGFloat revRate = 1/rate;
-    
-    cell.rightLeftExRate.text = [NSString stringWithFormat:@"%.3f", revRate];
-    
+    cell.leftCurrency.text = [self.currencies objectAtIndex:indexPath.row];
+        
     cell.leftCurrencyImage.image = [UIImage imageNamed:cell.leftCurrency.text];
-    cell.rightCurrencyImage.image = [UIImage imageNamed:cell.rightCurrency.text];
     
     return cell;
 }
@@ -145,7 +134,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.forex.count;
+    return self.currencies.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
