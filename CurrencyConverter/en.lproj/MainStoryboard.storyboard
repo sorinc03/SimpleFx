@@ -4,7 +4,7 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="2083"/>
     </dependencies>
     <scenes>
-        <!--Converter View Controller-->
+        <!--Converter View Controller - Converter-->
         <scene sceneID="5">
             <objects>
                 <viewController id="2" customClass="ConverterViewController" sceneMemberID="viewController">
@@ -13,7 +13,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
-                    <navigationItem key="navigationItem" id="k5u-0T-fna"/>
+                    <navigationItem key="navigationItem" title="Converter" id="k5u-0T-fna"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4" sceneMemberID="firstResponder"/>
             </objects>
@@ -42,9 +42,6 @@
     <classes>
         <class className="ConverterViewController" superclassName="UIViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/ConverterViewController.h"/>
-            <relationships>
-                <relationship kind="action" name="chooseCurrency:" candidateClass="UIButton"/>
-            </relationships>
         </class>
     </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

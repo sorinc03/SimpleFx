@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ConverterViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@interface ConverterViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
 
 @end

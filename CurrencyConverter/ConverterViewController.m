@@ -13,7 +13,9 @@
 
 @property (nonatomic) CGFloat screenHeight;
 @property (strong) UIPickerView *picker;
-@property (strong) NSArray *currencies;
+@property (strong) NSArray *currencySymbols;
+@property (strong) NSArray *currencyNames;
+@property (strong) NSMutableArray *currencyValues;
 @property (strong) NSMutableArray *currencyPairs;
 @property (strong) NSMutableDictionary *forex;
 @property (strong) UITableView *currencyTable;
@@ -26,7 +28,10 @@
 {
     [super viewDidLoad];
     
-    self.currencies = @[@"EUR", @"USD", @"GBP", @"INR", @"AUD", @"CAD", @"AED", @"JPY"];
+    self.currencySymbols = @[@"EUR", @"USD", @"GBP", @"INR", @"AUD", @"CAD", @"AED", @"JPY"];
+    self.currencyNames = @[@"Euro", @"US Dollar", @"British Pound", @"Indian Rupee", @"Australian Dollar", @"Canadian Dollar", @"Emirate Dirham", @"Japanese Yen"];
+    self.currencyValues = [NSMutableArray arrayWithCapacity:self.currencySymbols.count];
+    self.currencyValues[0] = @"1.0";
     
     self.screenHeight = [[UIScreen mainScreen] bounds].size.height;
     [self initCurrencyPairs];
@@ -40,10 +45,10 @@
     self.forex = [[NSMutableDictionary alloc] init];
     self.currencyPairs = [[NSMutableArray alloc] init];
     
-    for (int i = 0; i < self.currencies.count; i++) {
-        NSString *firstCurrency = self.currencies[i];
-        for (int j = i+1; j < self.currencies.count; j++) {
-            NSString *currencyPair = [NSString stringWithFormat:@"%@%@", firstCurrency, self.currencies[j]];
+    for (int i = 0; i < self.currencySymbols.count; i++) {
+        NSString *firstCurrency = self.currencySymbols[i];
+        for (int j = i+1; j < self.currencySymbols.count; j++) {
+            NSString *currencyPair = [NSString stringWithFormat:@"%@%@", firstCurrency, self.currencySymbols[j]];
             if (currencyPair.length > 0)
                 [self.currencyPairs addObject:currencyPair];
         }
@@ -84,7 +89,9 @@
              
              array = nil;
              
-             [self.currencyTable reloadData];
+             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                 [self.currencyTable reloadData];
+             }];
              
              NSLog(@"%@", self.forex);
          }else if ([data length] == 0 && error == nil){
@@ -110,10 +117,30 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     CurrencyCell *cell = [tableView dequeueReusableCellWithIdentifier:@"CurrencyExchange"];
+    cell.textField.delegate = self;
     
-    cell.leftCurrency.text = [self.currencies objectAtIndex:indexPath.row];
+    NSString *currencySymbol = [self.currencySymbols objectAtIndex:indexPath.row];
+    
+    NSString *currencyValueKey = [NSString stringWithFormat:@"EUR%@", currencySymbol];
+    
+    NSString *currencyName = [NSString stringWithFormat:@"%@ - %@",
+                              currencySymbol,
+                              [self.currencyNames objectAtIndex:indexPath.row]
+                              ];
+    
+    cell.currencySymbolLabel.text = currencyName;
         
-    cell.leftCurrencyImage.image = [UIImage imageNamed:cell.leftCurrency.text];
+    cell.currencyImage.image = [UIImage imageNamed:currencySymbol];
+    
+    if ([currencySymbol isEqualToString:@"EUR"]) {
+        cell.textField.text = @"1.0";
+    }
+    else {
+        cell.textField.text = [self.forex valueForKey:currencyValueKey];
+    }
+    
+    if (cell.textField.text != nil)
+        self.currencyValues[indexPath.row] = cell.textField.text;
     
     return cell;
 }
@@ -134,11 +161,24 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.currencies.count;
+    return self.currencySymbols.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 60.0f;
+}
+
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
+    NSLog(@"%@", textField.text);
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField {
+    [textField resignFirstResponder];
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [textField resignFirstResponder];
+    return YES;
 }
 
 - (void)didReceiveMemoryWarning

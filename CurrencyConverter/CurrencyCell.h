@@ -7,14 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ConverterViewController.h"
 
 @interface CurrencyCell : UITableViewCell
 
-@property (strong) UIImageView *leftCurrencyImage;
-@property (strong) UILabel *leftCurrency;
-@property (strong) UIImageView *rightCurrencyImage;
-@property (strong) UILabel *rightCurrency;
-@property (strong) UILabel *leftRightExRate;
-@property (strong) UILabel *rightLeftExRate;
+@property (strong) UIImageView *currencyImage;
+@property (strong) UILabel *currencySymbolLabel;
+@property (strong) UILabel *currencyNameLabel;
+@property (strong) UITextField *textField;
 
 @end

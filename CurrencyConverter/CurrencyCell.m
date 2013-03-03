@@ -14,47 +14,40 @@
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        [self setupLeftRightLabels];
+        [self setSelectionStyle:UITableViewCellSelectionStyleNone];
         
-        [self setupImages];
+        [self setupCurrencyImage];
+        [self setupLabels];
+        [self setupTextField];
         
-        [self addSubview:self.leftCurrency];
-        [self addSubview:self.leftCurrencyImage];
-        [self addSubview:self.leftRightExRate];
-        [self addSubview:self.rightCurrency];
-        [self addSubview:self.rightCurrencyImage];
-        [self addSubview:self.rightLeftExRate];
+        [self addSubview:self.currencySymbolLabel];
+        [self addSubview:self.currencyNameLabel];
+        [self addSubview:self.currencyImage];
+        [self addSubview:self.textField];
     }
     return self;
 }
 
-- (void)setupImages {
-    self.leftCurrencyImage = [[UIImageView alloc] initWithFrame:CGRectMake(10, 5, 50, 30)];
-    self.leftCurrencyImage.image = [UIImage imageNamed:@"us-flag.jpg"];
-    
-    self.rightCurrencyImage = [[UIImageView alloc] initWithFrame:CGRectMake(260, 5, 50, 30)];
-    self.rightCurrencyImage.image = [UIImage imageNamed:@"INR_flag.jpg"];
+- (void)setupCurrencyImage {
+    self.currencyImage = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 66, 40)];
+    self.currencyImage.image = [UIImage imageNamed:@"us-flag.jpg"];
 }
 
-- (void)setupLeftRightLabels {
-    self.leftCurrency = [[UILabel alloc] initWithFrame:CGRectMake(20, 40, 30, 10)];
-    self.leftCurrency.font = [UIFont systemFontOfSize:13.0];
-    self.leftCurrency.textAlignment = NSTextAlignmentCenter;
-    self.leftCurrency.text = @"EUR";
-    self.rightCurrency = [[UILabel alloc] initWithFrame:CGRectMake(270, 40, 30, 10)];
-    self.rightCurrency.font = [UIFont systemFontOfSize:13.0];
-    self.rightCurrency.textAlignment = NSTextAlignmentCenter;
-    self.rightCurrency.text = @"USD";
-    
-    self.leftRightExRate = [[UILabel alloc] initWithFrame:CGRectMake(135, 10, 70, 20)];
-    self.leftRightExRate.font = [UIFont systemFontOfSize:17.0];
-    self.leftRightExRate.textAlignment = NSTextAlignmentCenter;
-    self.leftRightExRate.text = @"1.675";
-    
-    self.rightLeftExRate = [[UILabel alloc] initWithFrame:CGRectMake(140, 30, 70, 20)];
-    self.rightLeftExRate.font = [UIFont systemFontOfSize:12.0];
-    self.rightLeftExRate.textAlignment = NSTextAlignmentCenter;
-    self.rightLeftExRate.text = @"86.75";
+- (void)setupTextField {
+    self.textField = [[UITextField alloc] initWithFrame:CGRectMake(81, 10, 200, 25)];
+    self.textField.textAlignment = NSTextAlignmentLeft;
+    self.textField.font = [UIFont systemFontOfSize:15.0];
+    //self.textField.keyboardType = UIKeyboardTypeDecimalPad;
+    self.textField.borderStyle = UITextBorderStyleRoundedRect;
+    self.textField.clearButtonMode = UITextFieldViewModeWhileEditing;
+    [self.textField setBorderStyle:UITextBorderStyleRoundedRect];
+}
+
+- (void)setupLabels {
+    self.currencySymbolLabel = [[UILabel alloc] initWithFrame:CGRectMake(81, 40, 170, 12)];
+    self.currencySymbolLabel.font = [UIFont systemFontOfSize:14.0];
+    self.currencySymbolLabel.textAlignment = NSTextAlignmentLeft;
+    self.currencySymbolLabel.text = @"EUR - Australian Dollar";
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
