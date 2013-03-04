@@ -21,7 +21,6 @@
         [self setupTextField];
         
         [self addSubview:self.currencySymbolLabel];
-        [self addSubview:self.currencyNameLabel];
         [self addSubview:self.currencyImage];
         [self addSubview:self.textField];
     }
@@ -37,7 +36,7 @@
     self.textField = [[UITextField alloc] initWithFrame:CGRectMake(81, 10, 200, 25)];
     self.textField.textAlignment = NSTextAlignmentLeft;
     self.textField.font = [UIFont systemFontOfSize:15.0];
-    //self.textField.keyboardType = UIKeyboardTypeDecimalPad;
+    //self.textField.keyboardType = UIKeyboardTypeNumberPad;
     self.textField.borderStyle = UITextBorderStyleRoundedRect;
     self.textField.clearButtonMode = UITextFieldViewModeWhileEditing;
     [self.textField setBorderStyle:UITextBorderStyleRoundedRect];

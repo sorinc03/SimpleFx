@@ -19,6 +19,7 @@
 @property (strong) NSMutableArray *currencyPairs;
 @property (strong) NSMutableDictionary *forex;
 @property (strong) UITableView *currencyTable;
+@property (strong) NSString *editingCurrency;
 
 @end
 
@@ -31,6 +32,12 @@
     self.currencySymbols = @[@"EUR", @"USD", @"GBP", @"INR", @"AUD", @"CAD", @"AED", @"JPY"];
     self.currencyNames = @[@"Euro", @"US Dollar", @"British Pound", @"Indian Rupee", @"Australian Dollar", @"Canadian Dollar", @"Emirate Dirham", @"Japanese Yen"];
     self.currencyValues = [NSMutableArray arrayWithCapacity:self.currencySymbols.count];
+    
+    self.editingCurrency = @"";
+    
+    for (int i = 0; i < self.currencyValues.count; i++) {
+        self.currencyValues[i] = @"";
+    }
     self.currencyValues[0] = @"1.0";
     
     self.screenHeight = [[UIScreen mainScreen] bounds].size.height;
@@ -38,7 +45,7 @@
     
     [self getTodaysExchangeRates];
     
-    [self setupTableView];
+    //[self setupTableView];
 }
 
 - (void)initCurrencyPairs {
@@ -47,10 +54,12 @@
     
     for (int i = 0; i < self.currencySymbols.count; i++) {
         NSString *firstCurrency = self.currencySymbols[i];
-        for (int j = i+1; j < self.currencySymbols.count; j++) {
-            NSString *currencyPair = [NSString stringWithFormat:@"%@%@", firstCurrency, self.currencySymbols[j]];
-            if (currencyPair.length > 0)
-                [self.currencyPairs addObject:currencyPair];
+        for (int j = 0; j < self.currencySymbols.count; j++) {
+            if (![self.currencySymbols[j] isEqualToString:firstCurrency]) {
+                NSString *currencyPair = [NSString stringWithFormat:@"%@%@", firstCurrency, self.currencySymbols[j]];
+                if (currencyPair.length > 0)
+                    [self.currencyPairs addObject:currencyPair];
+            }
         }
     }
 }
@@ -90,7 +99,10 @@
              array = nil;
              
              [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                 [self.currencyTable reloadData];
+                 [self updateValuesFrom:@"EUR" withAmount:@"1.0"];
+                 
+                 [self setupTableView];
+                 //[self.currencyTable reloadData];
              }];
              
              NSLog(@"%@", self.forex);
@@ -121,8 +133,6 @@
     
     NSString *currencySymbol = [self.currencySymbols objectAtIndex:indexPath.row];
     
-    NSString *currencyValueKey = [NSString stringWithFormat:@"EUR%@", currencySymbol];
-    
     NSString *currencyName = [NSString stringWithFormat:@"%@ - %@",
                               currencySymbol,
                               [self.currencyNames objectAtIndex:indexPath.row]
@@ -132,15 +142,22 @@
         
     cell.currencyImage.image = [UIImage imageNamed:currencySymbol];
     
+    /*
     if ([currencySymbol isEqualToString:@"EUR"]) {
         cell.textField.text = @"1.0";
     }
     else {
         cell.textField.text = [self.forex valueForKey:currencyValueKey];
-    }
+    }*/
     
-    if (cell.textField.text != nil)
-        self.currencyValues[indexPath.row] = cell.textField.text;
+    cell.textField.text = self.currencyValues[indexPath.row];
+    
+    /*if (cell.textField.text != nil)
+        self.currencyValues[indexPath.row] = cell.textField.text;*/
+    
+    [cell.textField addTarget:self
+                       action:@selector(textFieldTextHasChanged:)
+             forControlEvents:UIControlEventEditingChanged];
     
     return cell;
 }
@@ -173,12 +190,68 @@
 }
 
 - (void)textFieldDidEndEditing:(UITextField *)textField {
-    [textField resignFirstResponder];
+    //[textField resignFirstResponder];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    [textField resignFirstResponder];
-    return YES;
+    //[textField resignFirstResponder];
+    return NO;
+}
+
+- (void)textFieldTextHasChanged:(UITextField *)textField {
+    CurrencyCell *cell = (CurrencyCell *)textField.superview;
+    NSString *currencySymbol = [cell.currencySymbolLabel.text substringToIndex:3];
+    
+    self.editingCurrency = currencySymbol;
+    
+    [self updateValuesFrom:currencySymbol withAmount:textField.text];
+    
+}
+
+- (void)updateValuesFrom:(NSString *)currencySymbol withAmount:(NSString *)amount{
+    NSInteger initialCurrencyIndex = [self getIndexForSymbol:currencySymbol];
+    self.currencyValues[initialCurrencyIndex] = amount;
+    
+    CGFloat amountToConvert = amount.floatValue;
+    
+    for (NSString *symbol in self.currencySymbols) {
+        if (![symbol isEqualToString:currencySymbol]) {
+            NSString *currencyPair = [NSString stringWithFormat:@"%@%@", currencySymbol, symbol];
+            NSInteger indexToUpdate = [self getIndexForSymbol:symbol];
+            CGFloat forexRate = ((NSString *)[self.forex valueForKey:currencyPair]).floatValue;
+            
+            CGFloat result = amountToConvert * forexRate;
+            
+            self.currencyValues[indexToUpdate] = [NSString stringWithFormat:@"%.3f", result];
+        }
+    }
+    
+    if (![self.editingCurrency isEqualToString:@""]) {
+        [self reloadTextFields];
+        //[self.keyboardHackTextField becomeFirstResponder];
+        //[self.currencyTable reloadData];
+    }
+    
+    NSLog(@"%@, %d", currencySymbol, [self getIndexForSymbol:currencySymbol]);
+}
+
+- (void)reloadTextFields {
+    for (int i = 0; i < self.currencyValues.count; i++) {
+        NSIndexPath *path = [NSIndexPath indexPathForRow:i inSection:0];
+        
+        CurrencyCell *cell = (CurrencyCell *)[self.currencyTable cellForRowAtIndexPath:path];
+        
+        cell.textField.text = self.currencyValues[i];
+    }
+}
+
+- (NSInteger)getIndexForSymbol:(NSString *)symbol {
+    for (int i = 0; i < self.currencySymbols.count; i++) {
+        if ([self.currencySymbols[i] isEqualToString:symbol])
+            return i;
+    }
+    
+    return 0;
 }
 
 - (void)didReceiveMemoryWarning

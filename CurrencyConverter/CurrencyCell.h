@@ -13,7 +13,6 @@
 
 @property (strong) UIImageView *currencyImage;
 @property (strong) UILabel *currencySymbolLabel;
-@property (strong) UILabel *currencyNameLabel;
 @property (strong) UITextField *textField;
 
 @end
