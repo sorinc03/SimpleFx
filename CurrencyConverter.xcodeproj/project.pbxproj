@@ -32,6 +32,7 @@
 		B5AAAA2616E26B09007FB2FF /* USD.png in Resources */ = {isa = PBXBuildFile; fileRef = B5AAAA2116E26B09007FB2FF /* USD.png */; };
 		B5AAAA2816E26B30007FB2FF /* EUR.png in Resources */ = {isa = PBXBuildFile; fileRef = B5AAAA2716E26B30007FB2FF /* EUR.png */; };
 		B5AAAA2A16E26BD1007FB2FF /* AUD.png in Resources */ = {isa = PBXBuildFile; fileRef = B5AAAA2916E26BD1007FB2FF /* AUD.png */; };
+		B5AAAA2D16E5085F007FB2FF /* CurrencyDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AAAA2C16E5085F007FB2FF /* CurrencyDownloader.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -77,6 +78,8 @@
 		B5AAAA2116E26B09007FB2FF /* USD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = USD.png; sourceTree = "<group>"; };
 		B5AAAA2716E26B30007FB2FF /* EUR.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = EUR.png; sourceTree = "<group>"; };
 		B5AAAA2916E26BD1007FB2FF /* AUD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AUD.png; sourceTree = "<group>"; };
+		B5AAAA2B16E5085F007FB2FF /* CurrencyDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurrencyDownloader.h; sourceTree = "<group>"; };
+		B5AAAA2C16E5085F007FB2FF /* CurrencyDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurrencyDownloader.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -142,6 +145,8 @@
 				B5AAA9E616E206A5007FB2FF /* MainStoryboard.storyboard */,
 				B5AAA9E916E206A5007FB2FF /* ConverterViewController.h */,
 				B5AAA9EA16E206A5007FB2FF /* ConverterViewController.m */,
+				B5AAAA2B16E5085F007FB2FF /* CurrencyDownloader.h */,
+				B5AAAA2C16E5085F007FB2FF /* CurrencyDownloader.m */,
 				B5AAAA0D16E25FB2007FB2FF /* CurrencyCell.h */,
 				B5AAAA0E16E25FB2007FB2FF /* CurrencyCell.m */,
 				B5AAA9D516E206A5007FB2FF /* Supporting Files */,
@@ -319,6 +324,7 @@
 				B5AAA9DF16E206A5007FB2FF /* AppDelegate.m in Sources */,
 				B5AAA9EB16E206A5007FB2FF /* ConverterViewController.m in Sources */,
 				B5AAAA0F16E25FB2007FB2FF /* CurrencyCell.m in Sources */,
+				B5AAAA2D16E5085F007FB2FF /* CurrencyDownloader.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
