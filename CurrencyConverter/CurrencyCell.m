@@ -14,7 +14,7 @@
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        [self setSelectionStyle:UITableViewCellSelectionStyleNone];
+        //[self setSelectionStyle:UITableViewCellSelectionStyleNone];
         
         [self setupCurrencyImage];
         [self setupLabels];

@@ -13,8 +13,8 @@
 
 @property (nonatomic) CGFloat screenHeight;
 @property (strong) UIPickerView *picker;
-@property (strong) NSArray *currencySymbols;
-@property (strong) NSArray *currencyNames;
+@property (strong) NSMutableArray *currencySymbols;
+@property (strong) NSMutableArray *currencyNames;
 @property (strong) NSMutableArray *currencyValues;
 @property (strong) NSMutableArray *currencyPairs;
 @property (strong) NSMutableDictionary *forex;
@@ -29,8 +29,8 @@
 {
     [super viewDidLoad];
     
-    self.currencySymbols = @[@"EUR", @"USD", @"GBP", @"INR", @"AUD", @"CAD", @"AED", @"JPY"];
-    self.currencyNames = @[@"Euro", @"US Dollar", @"British Pound", @"Indian Rupee", @"Australian Dollar", @"Canadian Dollar", @"Emirate Dirham", @"Japanese Yen"];
+    self.currencySymbols = [[NSMutableArray alloc] initWithArray:@[@"EUR", @"USD", @"GBP", @"INR", @"AUD", @"CAD", @"AED", @"JPY"]];
+    self.currencyNames = [[NSMutableArray alloc] initWithArray:@[@"Euro", @"US Dollar", @"British Pound", @"Indian Rupee", @"Australian Dollar", @"Canadian Dollar", @"Emirate Dirham", @"Japanese Yen"]];
     self.currencyValues = [NSMutableArray arrayWithCapacity:self.currencySymbols.count];
     
     self.editingCurrency = @"";
@@ -106,11 +106,11 @@
              }];
              
              NSLog(@"%@", self.forex);
-         }else if ([data length] == 0 && error == nil){
+         } else if ([data length] == 0 && error == nil){
              //[self emptyReply];
-         }else if (error != nil && error.code == NSURLErrorTimedOut){ //used this NSURLErrorTimedOut from foundation error responses
+         } else if (error != nil && error.code == NSURLErrorTimedOut){ //used this NSURLErrorTimedOut from foundation error responses
              //[self timedOut];
-         }else if (error != nil){
+         } else if (error != nil){
              //[self downloadError:error];
          }
      }];
@@ -142,18 +142,11 @@
         
     cell.currencyImage.image = [UIImage imageNamed:currencySymbol];
     
-    /*
-    if ([currencySymbol isEqualToString:@"EUR"]) {
-        cell.textField.text = @"1.0";
-    }
-    else {
-        cell.textField.text = [self.forex valueForKey:currencyValueKey];
-    }*/
-    
     cell.textField.text = self.currencyValues[indexPath.row];
     
-    /*if (cell.textField.text != nil)
-        self.currencyValues[indexPath.row] = cell.textField.text;*/
+    if (indexPath.row > 0) {
+        //cell.textField.enabled = NO;
+    }
     
     [cell.textField addTarget:self
                        action:@selector(textFieldTextHasChanged:)
@@ -168,9 +161,37 @@
     [tableView beginUpdates];
     [self.forex removeObjectForKey:@"USDGBP"];
     [tableView deleteRowsAtIndexPaths:array withRowAnimation:UITableViewRowAnimationLeft];
-    //[tableView insertRowsAtIndexPaths:array2 withRowAnimation:UITableViewRowAnimationBottom];
+    //[tableView insertRowsAtIndexPaths:array2 withRowAnimation:UITableViewRowAnimationBottom];*/
     
-    [tableView endUpdates];*/
+    if (indexPath.row != 0) {
+        NSArray *array = [[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:0 inSection:0], [NSIndexPath indexPathForRow:indexPath.row inSection:0] , nil];
+        
+        NSString *symbolToReplace = [self.currencySymbols objectAtIndex:0];
+        NSString *replacementSymbol = [self.currencySymbols objectAtIndex:indexPath.row];
+        
+        [tableView beginUpdates];
+        
+        [self.currencySymbols setObject:symbolToReplace atIndexedSubscript:indexPath.row];
+        [self.currencySymbols setObject:replacementSymbol atIndexedSubscript:0];
+        
+        symbolToReplace = [self.currencyNames objectAtIndex:0];
+        replacementSymbol = [self.currencyNames objectAtIndex:indexPath.row];
+        
+        [self.currencyNames setObject:symbolToReplace atIndexedSubscript:indexPath.row];
+        [self.currencyNames setObject:replacementSymbol atIndexedSubscript:0];
+        
+        symbolToReplace = [self.currencyValues objectAtIndex:0];
+        replacementSymbol = [self.currencyValues objectAtIndex:indexPath.row];
+        
+        [self.currencyValues setObject:symbolToReplace atIndexedSubscript:indexPath.row];
+        [self.currencyValues setObject:replacementSymbol atIndexedSubscript:0];
+        
+        [tableView deleteRowsAtIndexPaths:array withRowAnimation:UITableViewRowAnimationLeft];
+        
+        [tableView insertRowsAtIndexPaths:array withRowAnimation:UITableViewRowAnimationRight];
+        
+        [tableView endUpdates];
+    }
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -186,15 +207,21 @@
 }
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
-    NSLog(@"%@", textField.text);
+    //NSLog(@"%@", textField.text);
+    CurrencyCell *cell = (CurrencyCell *)textField.superview;
+    NSIndexPath *cellPath = [self.currencyTable indexPathForCell:cell];
+    cellPath = [NSIndexPath indexPathForRow:self.currencyValues.count-cellPath.row inSection:0];
+    //CGFloat heightIndex = cell.frame.size.height * (self.currencyValues.count-cellPath.row);
+    //[self.currencyTable setContentOffset:CGPointMake(0, heightIndex) animated:YES];
+    //[self.currencyTable scrollToRowAtIndexPath:cellPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
 }
 
 - (void)textFieldDidEndEditing:(UITextField *)textField {
-    //[textField resignFirstResponder];
+    [textField resignFirstResponder];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    //[textField resignFirstResponder];
+    [textField resignFirstResponder];
     return NO;
 }
 
@@ -232,7 +259,7 @@
         //[self.currencyTable reloadData];
     }
     
-    NSLog(@"%@, %d", currencySymbol, [self getIndexForSymbol:currencySymbol]);
+    //NSLog(@"%@, %d", currencySymbol, [self getIndexForSymbol:currencySymbol]);
 }
 
 - (void)reloadTextFields {
