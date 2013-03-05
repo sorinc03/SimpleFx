@@ -23,6 +23,8 @@
 
 @protocol CurrencyDownloaderDelegate
 
+- (void)showNewDataInfoMessage;
 - (void)downloadCompleted;
+- (void)showOldData;
 
 @end

@@ -22,6 +22,7 @@
         
         [self addSubview:self.currencySymbolLabel];
         [self addSubview:self.currencyImage];
+        [self addSubview:self.valueLabel];
         [self addSubview:self.textField];
     }
     return self;
@@ -33,18 +34,25 @@
 }
 
 - (void)setupTextField {
-    self.textField = [[UITextField alloc] initWithFrame:CGRectMake(81, 10, 200, 25)];
+    CGRect frame = CGRectMake(81, 10, 200, 25);
+    self.textField = [[UITextField alloc] initWithFrame:frame];
     self.textField.textAlignment = NSTextAlignmentLeft;
     self.textField.font = [UIFont systemFontOfSize:15.0];
     //self.textField.keyboardType = UIKeyboardTypeNumberPad;
     self.textField.borderStyle = UITextBorderStyleRoundedRect;
     self.textField.clearButtonMode = UITextFieldViewModeWhileEditing;
     [self.textField setBorderStyle:UITextBorderStyleRoundedRect];
+    
+    frame.origin.y -= 5;
+    frame.origin.x += 2;
+    self.valueLabel = [[UILabel alloc] initWithFrame:frame];
+    self.valueLabel.textAlignment = NSTextAlignmentLeft;
+    self.valueLabel.font = [UIFont systemFontOfSize:15.0];
 }
 
 - (void)setupLabels {
-    self.currencySymbolLabel = [[UILabel alloc] initWithFrame:CGRectMake(81, 40, 170, 12)];
-    self.currencySymbolLabel.font = [UIFont systemFontOfSize:14.0];
+    self.currencySymbolLabel = [[UILabel alloc] initWithFrame:CGRectMake(83, 37, 170, 16)];
+    self.currencySymbolLabel.font = [UIFont systemFontOfSize:13.0];
     self.currencySymbolLabel.textAlignment = NSTextAlignmentLeft;
     self.currencySymbolLabel.text = @"EUR - Australian Dollar";
 }

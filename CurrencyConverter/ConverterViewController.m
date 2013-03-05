@@ -37,10 +37,35 @@
     //[self setupTableView];
 }
 
+- (void)showOldData {
+    [self updateValuesFrom:@"EUR" withAmount:@"1.0"];
+    [self setupTableView];
+}
+
 - (void)downloadCompleted {
     [self updateValuesFrom:@"EUR" withAmount:@"1.0"];
     
-    [self setupTableView];
+    if (self.currencyTable == nil)
+        [self setupTableView];
+}
+
+- (void)showNewDataInfoMessage {
+    UIButton *infoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    infoButton.frame = CGRectMake(60, 10, 200, 44);
+    infoButton.alpha = 0.0;
+    [infoButton addTarget:self action:@selector(refreshTableData:) forControlEvents:UIControlEventTouchUpInside];
+    [infoButton setTitle:@"Refresh" forState:UIControlStateNormal];
+    
+    [self.view addSubview:infoButton];
+    
+    [UIView animateWithDuration:0.8 animations:^{
+        infoButton.alpha = 1.0;
+    }];
+}
+
+- (void)refreshTableData:(UIButton *)refreshButton {
+    [refreshButton removeFromSuperview];
+    [self.currencyTable reloadData];
 }
 
 - (void)setupTableView {
@@ -71,12 +96,20 @@
     cell.textField.text = self.downloader.currencyValues[indexPath.row];
     
     if (indexPath.row > 0) {
-        //cell.textField.enabled = NO;
+        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+        cell.textField.alpha = 0.0;
+    }
+    
+    else {
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.textField.alpha = 1.0;
     }
     
     [cell.textField addTarget:self
                        action:@selector(textFieldTextHasChanged:)
              forControlEvents:UIControlEventEditingChanged];
+    
+    cell.valueLabel.text = self.downloader.currencyValues[indexPath.row];
     
     return cell;
 }
@@ -112,11 +145,14 @@
         [self.downloader.currencyValues setObject:symbolToReplace atIndexedSubscript:indexPath.row];
         [self.downloader.currencyValues setObject:replacementSymbol atIndexedSubscript:0];
         
-        [tableView deleteRowsAtIndexPaths:array withRowAnimation:UITableViewRowAnimationLeft];
+        [tableView deleteRowsAtIndexPaths:array withRowAnimation:UITableViewRowAnimationTop];
         
-        [tableView insertRowsAtIndexPaths:array withRowAnimation:UITableViewRowAnimationRight];
+        [tableView insertRowsAtIndexPaths:array withRowAnimation:UITableViewRowAnimationTop];
         
         [tableView endUpdates];
+        
+        CurrencyCell *cell = (CurrencyCell *)[tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+        [cell.textField becomeFirstResponder];
     }
 }
 
@@ -175,7 +211,7 @@
             
             CGFloat result = amountToConvert * forexRate;
             
-            self.downloader.currencyValues[indexToUpdate] = [NSString stringWithFormat:@"%.3f", result];
+            self.downloader.currencyValues[indexToUpdate] = [NSString stringWithFormat:@"%.4f", result];
         }
     }
     
@@ -195,6 +231,7 @@
         CurrencyCell *cell = (CurrencyCell *)[self.currencyTable cellForRowAtIndexPath:path];
         
         cell.textField.text = self.downloader.currencyValues[i];
+        cell.valueLabel.text = self.downloader.currencyValues[i];
     }
 }
 

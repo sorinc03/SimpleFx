@@ -14,5 +14,6 @@
 @property (strong) UIImageView *currencyImage;
 @property (strong) UILabel *currencySymbolLabel;
 @property (strong) UITextField *textField;
+@property (strong) UILabel *valueLabel;
 
 @end
