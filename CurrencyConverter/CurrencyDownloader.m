@@ -7,10 +7,31 @@
 //
 
 #import "CurrencyDownloader.h"
+#import "Currency.h"
 
 @implementation CurrencyDownloader
 
 - (void)initDownloader {
+    self.currencies = [[NSMutableArray alloc] init];
+    
+    [self getSymbolsAndNames];
+    [self initCurrencyPairs];
+    [self setupCurrencies];
+    [self clearSymbolsAndNames];    
+    
+    NSUserDefaults *storedData = [NSUserDefaults standardUserDefaults];
+    
+    self.forex = [storedData valueForKey:@"exchangeRates"];
+    
+    if (self.forex.count > 0) {
+        [self.delegate showOldData];
+    }
+    
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    [self getTodaysExchangeRates];
+}
+
+- (void)getSymbolsAndNames {
     NSUserDefaults *storedData = [NSUserDefaults standardUserDefaults];
     
     self.currencySymbols = [storedData valueForKey:@"currencySymbols"];
@@ -22,25 +43,25 @@
     
     if (self.currencyNames == nil)
         self.currencyNames = [[NSMutableArray alloc] initWithArray:@[@"Euro", @"US Dollar", @"British Pound", @"Indian Rupee", @"Australian Dollar", @"Canadian Dollar", @"Emirate Dirham", @"Japanese Yen"]];
+}
+
+- (void)clearSymbolsAndNames {
+    self.currencySymbols = nil;
+    self.currencyNames = nil;
+}
+
+- (void)setupCurrencies {
+    NSString *value = @"1.0";
     
-    self.currencyValues = [NSMutableArray arrayWithCapacity:self.currencySymbols.count];
-    
-    for (int i = 0; i < self.currencyValues.count; i++) {
-        self.currencyValues[i] = @"";
+    for (int i = 0; i < self.currencyNames.count; i++) {
+        Currency *c = [[Currency alloc] initWithSymbol:self.currencySymbols[i]
+                                                  name:self.currencyNames[i]
+                                              andValue:value];
+        
+        value = @"0.0";
+        
+        [self.currencies addObject:c];
     }
-    self.currencyValues[0] = @"1.0";
-    
-    [self initCurrencyPairs];
-    
-    self.forex = [storedData valueForKey:@"exchangeRates"];
-    
-    if (self.forex.count > 0) {
-        [self.delegate showOldData];
-    }
-    
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-    [self getTodaysExchangeRates];
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 }
 
 - (void)initCurrencyPairs {
@@ -93,21 +114,21 @@
              BOOL newRates = [self areNewRates:todayRates];
              if (newRates || self.forex.count == 0) {
                  self.forex = [[NSMutableDictionary alloc] initWithObjects:todayRates forKeys:self.currencyPairs];
+                 
+                 NSString *date = [NSString stringWithFormat:@"%@", [self formattedDate]];
+                 
+                 [self.forex setValue:date forKey:@"lastUpdated"];
              
                  array = nil;
              
                  [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                      [self saveData];
                      
-                     if (newRates) {
-                         [self.delegate showNewDataInfoMessage];
-                     }
-                     
                      [self.delegate downloadCompleted];
+                     
+                     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
                 }];
              }
-             
-             NSLog(@"%@", self.forex);
          } else if ([data length] == 0 && error == nil){
              //[self emptyReply];
          } else if (error != nil && error.code == NSURLErrorTimedOut){ //used this NSURLErrorTimedOut from foundation error responses
@@ -116,6 +137,13 @@
              //[self downloadError:error];
          }
      }];
+}
+
+- (NSString *)formattedDate {
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    
+    [dateFormatter setDateFormat:@"dd.MM.yyy HH:mm:ss"];
+    return [dateFormatter stringFromDate:[NSDate date]];
 }
 
 - (BOOL)areNewRates:(NSMutableArray *)todayRates {

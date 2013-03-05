@@ -10,6 +10,7 @@
 
 @interface CurrencyDownloader : NSObject
 
+@property (strong) NSMutableArray *currencies;
 @property (strong) NSMutableArray *currencySymbols;
 @property (strong) NSMutableArray *currencyNames;
 @property (strong) NSMutableArray *currencyValues;
@@ -23,7 +24,6 @@
 
 @protocol CurrencyDownloaderDelegate
 
-- (void)showNewDataInfoMessage;
 - (void)downloadCompleted;
 - (void)showOldData;
 
