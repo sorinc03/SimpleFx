@@ -14,6 +14,7 @@
 
 @property (nonatomic) CGFloat screenHeight;
 @property (strong) UITableView *currencyTable;
+@property (strong) NSMutableDictionary *urlMappings;
 @property (strong) NSString *editingCurrency;
 @property (strong) CurrencyDownloader *downloader;
 
@@ -25,6 +26,8 @@
 {
     [super viewDidLoad];
     
+    [self setupURLMappings];
+    
     self.editingCurrency = @"";
         
     self.screenHeight = [[UIScreen mainScreen] bounds].size.height;
@@ -35,6 +38,13 @@
     [self.downloader initDownloader];
     
     //[self setupTableView];
+}
+
+- (void)setupURLMappings {
+    self.urlMappings = [[NSMutableDictionary alloc] initWithDictionary:
+                        @{@"EUR" : @"Euro", @"GBP" : @"Pound_sterling", @"JPY" : @"Japanese_yen",
+                        @"AED" : @"United_Arab_Emirates_dirham", @"AUD" : @"Australian_dollar",
+                        @"CAD" : @"Canadian_dollar", @"INR" : @"Indian_rupee"}];
 }
 
 - (void)showOldData {
@@ -114,14 +124,12 @@
     return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    /*NSArray *array = [[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:1 inSection:0], nil];
-    NSArray *array2 = [[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:2 inSection:0], nil];
-    [tableView beginUpdates];
-    [self.downloader.forex removeObjectForKey:@"USDGBP"];
-    [tableView deleteRowsAtIndexPaths:array withRowAnimation:UITableViewRowAnimationLeft];
-    //[tableView insertRowsAtIndexPaths:array2 withRowAnimation:UITableViewRowAnimationBottom];*/
+- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
+    NSString *currency = self.downloader.currencySymbols[indexPath.row];
     
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {    
     if (indexPath.row != 0) {
         NSArray *array = [[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:0 inSection:0], [NSIndexPath indexPathForRow:indexPath.row inSection:0] , nil];
         
@@ -151,7 +159,10 @@
         
         [tableView endUpdates];
         
-        CurrencyCell *cell = (CurrencyCell *)[tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+        CurrencyCell *cell = (CurrencyCell *)[tableView cellForRowAtIndexPath:
+                                              [NSIndexPath indexPathForRow:0
+                                                                 inSection:0]
+                                              ];
         [cell.textField becomeFirstResponder];
     }
 }
@@ -169,13 +180,9 @@
 }
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
-    //NSLog(@"%@", textField.text);
     CurrencyCell *cell = (CurrencyCell *)textField.superview;
     NSIndexPath *cellPath = [self.currencyTable indexPathForCell:cell];
     cellPath = [NSIndexPath indexPathForRow:self.downloader.currencyValues.count-cellPath.row inSection:0];
-    //CGFloat heightIndex = cell.frame.size.height * (self.downloader.currencyValues.count-cellPath.row);
-    //[self.currencyTable setContentOffset:CGPointMake(0, heightIndex) animated:YES];
-    //[self.currencyTable scrollToRowAtIndexPath:cellPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
 }
 
 - (void)textFieldDidEndEditing:(UITextField *)textField {
