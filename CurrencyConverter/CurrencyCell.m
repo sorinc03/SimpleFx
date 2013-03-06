@@ -13,9 +13,7 @@
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    if (self) {
-        //[self setAccessoryType:UITableViewCellAccessoryDetailDisclosureButton];
-        
+    if (self) {        
         [self setupCurrencyImage];
         [self setupLabels];
         [self setupTextField];
@@ -38,7 +36,7 @@
     self.textField = [[UITextField alloc] initWithFrame:frame];
     self.textField.textAlignment = NSTextAlignmentLeft;
     self.textField.font = [UIFont systemFontOfSize:15.0];
-    self.textField.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
+    self.textField.keyboardType = UIKeyboardTypeDecimalPad;
     self.textField.borderStyle = UITextBorderStyleRoundedRect;
     self.textField.clearButtonMode = UITextFieldViewModeWhileEditing;
     [self.textField setBorderStyle:UITextBorderStyleRoundedRect];

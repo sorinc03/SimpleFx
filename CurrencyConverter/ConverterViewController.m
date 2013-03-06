@@ -10,6 +10,8 @@
 #import "CurrencyDownloader.h"
 #import "CurrencyCell.h"
 #import "Currency.h"
+#import "UITextFieldAccessoryView.h"
+#import "NavigationBarTitleView.h"
 #import <QuartzCore/QuartzCore.h>
 #define REFRESH_HEIGHT 52.0f
 
@@ -19,12 +21,14 @@
 @property (strong) UITableView *currencyTable;
 @property (strong) NSMutableDictionary *urlMappings;
 @property (strong) NSString *editingCurrency;
+@property (strong) NSString *lastUpdated;
 @property (strong) CurrencyDownloader *downloader;
 @property (strong) UIImageView *refreshImageView;
+@property (strong) NavigationBarTitleView *titleView;
 
 @property (nonatomic, retain) UIView *refreshHeaderView;
 @property (nonatomic, retain) UILabel *pullToRefreshLabel;
-@property (nonatomic, retain) UIImageView *refreshArrow;
+@property (nonatomic, retain) UIImageView *refreshImage;
 @property (nonatomic, retain) UIActivityIndicatorView *refreshSpinner;
 @property (nonatomic, copy) NSString *textPull;
 @property (nonatomic, copy) NSString *textRelease;
@@ -42,6 +46,10 @@
     
     [self setupURLMappings];
     
+    self.titleView = [[NavigationBarTitleView alloc] initWithNavBarFrame:self.navigationController.navigationBar.frame];
+    
+    self.navigationItem.titleView = self.titleView;
+    
     self.editingCurrency = @"";
         
     self.screenHeight = [[UIScreen mainScreen] bounds].size.height;
@@ -56,6 +64,9 @@
     [self setupStrings];
     self.isDownloading = NO;
     self.isPulling = NO;
+    
+        
+    
     
     self.navigationItem.rightBarButtonItem = nil;
 }
@@ -104,13 +115,18 @@
             UIBarButtonItem *shareButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshTableData:)];
             self.navigationItem.rightBarButtonItem = shareButton;
             
+            self.titleView.subtitleLabel.text = @"Tap refresh button to refresh table";
+            
             [self.refreshImageView removeFromSuperview];
         }
+        
+        //[self.titleView showTitleOnly];
     }
 }
 
 - (void)refreshTableData:(id)refreshButton {
     self.navigationItem.rightBarButtonItem = nil;
+    self.titleView.subtitleLabel.text = self.lastUpdated;
     [self.currencyTable reloadData];
 }
 
@@ -153,6 +169,14 @@
              forControlEvents:UIControlEventEditingChanged];
     
     cell.valueLabel.text = c.value;
+    
+    if (indexPath.row == 0) {
+        UITextFieldAccessoryView *accessoryView = [[UITextFieldAccessoryView alloc]
+                                                   initWithFrame:CGRectMake(0, self.screenHeight-44, 320, 44)
+                                                   andTextField:cell.textField];
+        
+        [cell.textField setInputAccessoryView:accessoryView];
+    }
     
     return cell;
 }
@@ -274,12 +298,14 @@
 }
 
 - (void)setupStrings{
-    NSString *lastUpdated = [self.downloader.forex valueForKey:@"lastUpdated"];
-    if (lastUpdated == nil) {
-        lastUpdated = @"Never";
+    self.lastUpdated = [self.downloader.forex valueForKey:@"lastUpdated"];
+    if (self.lastUpdated == nil) {
+        self.lastUpdated = @"Never";
     }
     
-    self.textPull = [NSString stringWithFormat:@"Last updated: %@.\nPull down to refresh...", lastUpdated];
+    self.lastUpdated = [NSString stringWithFormat:@"Last updated: %@", self.lastUpdated];
+    
+    self.textPull = @"Pull down to refresh...";
     
     self.textRelease = @"Release to refresh...";
     self.textLoading = @"Loading...";
@@ -295,17 +321,15 @@
     self.pullToRefreshLabel.textAlignment = NSTextAlignmentCenter;
     self.pullToRefreshLabel.numberOfLines = 2;
     
-    self.refreshArrow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow.png"]];
-    self.refreshArrow.frame = CGRectMake(20,
-                                         (floorf(REFRESH_HEIGHT - 44) / 2),
-                                         27, 44);
+    self.refreshImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"02-redo.png"]];
+    self.refreshImage.frame = CGRectMake(45, 15, 30, 25);
     
     self.refreshSpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     self.refreshSpinner.frame = CGRectMake(50, floorf((REFRESH_HEIGHT - 20) / 2), 20, 20);
     self.refreshSpinner.hidesWhenStopped = YES;
     
     [self.refreshHeaderView addSubview:self.pullToRefreshLabel];
-    [self.refreshHeaderView addSubview:self.refreshArrow];
+    [self.refreshHeaderView addSubview:self.refreshImage];
     [self.refreshHeaderView addSubview:self.refreshSpinner];
     [self.currencyTable addSubview:self.refreshHeaderView];
 }
@@ -330,14 +354,32 @@
 - (void)startLoading {
     self.isDownloading = YES;
     
+    if (self.navigationItem.rightBarButtonItem != nil)
+        self.navigationItem.rightBarButtonItem = nil;
+    
     [UIView animateWithDuration:0.3 animations:^{
         self.currencyTable.contentInset = UIEdgeInsetsMake(REFRESH_HEIGHT, 0, 0, 0);
         self.pullToRefreshLabel.text = self.textLoading;
-        self.refreshArrow.hidden = YES;
+        self.refreshImage.hidden = YES;
         [self.refreshSpinner startAnimating];
     }];
     
-    [self.downloader getTodaysExchangeRates];
+    if ([self.downloader hasInternetConnection])
+        [self.downloader getTodaysExchangeRates];
+}
+
+- (void)unableToDownload {
+    [self.refreshImageView removeFromSuperview];
+    self.isDownloading = NO;
+    [self stopLoading];
+    
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
+                                                    message:@"Please check your internet connection and try again"
+                                                   delegate:self
+                                          cancelButtonTitle:@"Ok"
+                                          otherButtonTitles: nil];
+    
+    [alert show];
 }
 
 - (void)stopLoading {
@@ -346,7 +388,7 @@
     [UIView animateWithDuration:0.3
                      animations:^{
                          self.currencyTable.contentInset = UIEdgeInsetsZero;
-                         [self.refreshArrow layer].transform = CATransform3DMakeRotation(M_PI * 2, 0, 0, 1);
+                         [self.refreshImage layer].transform = CATransform3DMakeRotation(M_PI * 2, 0, 0, 1);
                      }
                      completion:^(BOOL finished) {
                          [self performSelector:@selector(stopLoadingComplete)];
@@ -355,8 +397,9 @@
 }
 
 - (void)stopLoadingComplete {
+    self.titleView.subtitleLabel.text = self.lastUpdated;
     self.pullToRefreshLabel.text = self.textPull;
-    self.refreshArrow.hidden = NO;
+    self.refreshImage.hidden = NO;
     [self.refreshSpinner stopAnimating];
     [self.currencyTable reloadData];
 }
@@ -371,12 +414,12 @@
         [UIView animateWithDuration:0.25 animations:^{
             if (scrollView.contentOffset.y < -REFRESH_HEIGHT) {
                 self.pullToRefreshLabel.text = self.textRelease;
-                [self.refreshArrow layer].transform = CATransform3DMakeRotation(M_PI, 0, 0, 1);
+                [self.refreshImage layer].transform = CATransform3DMakeRotation(M_PI, 0, 0, 1);
             }
             
             else {
                 self.pullToRefreshLabel.text = self.textPull;
-                [self.refreshArrow layer].transform = CATransform3DMakeRotation(M_PI * 2, 0, 0, 1);
+                [self.refreshImage layer].transform = CATransform3DMakeRotation(M_PI * 2, 0, 0, 1);
             }
         }];
     }

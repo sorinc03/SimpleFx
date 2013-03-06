@@ -7,6 +7,8 @@
 //
 
 #import "CurrencyConverterTests.h"
+#import "CurrencyDownloader.h"
+#import "Currency.h"
 
 @implementation CurrencyConverterTests
 
@@ -24,9 +26,10 @@
     [super tearDown];
 }
 
-- (void)testExample
-{
-    STFail(@"Unit tests are not implemented yet in CurrencyConverterTests");
+- (void)testCurrencyAllocation {
+    Currency *c = [[Currency alloc] initWithSymbol:@"CNY" name:@"Yuan" andValue:@"1.0"];
+    STAssertTrue([c.name isEqualToString:@"Yuan"], @"Property allocation works");
+    
 }
 
 @end

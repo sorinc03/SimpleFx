@@ -8,14 +8,28 @@
 
 #import "CurrencyDownloader.h"
 #import "Currency.h"
+#import "Reachability.h"
+
+@interface CurrencyDownloader ()
+
+@property (strong) NSMutableArray *currencySymbols;
+@property (strong) NSMutableArray *currencyNames;
+@property (strong) NSMutableArray *currencyValues;
+@property (strong) NSMutableArray *currencyPairs;
+@property (strong) Reachability *reachability;
+
+@end
 
 @implementation CurrencyDownloader
 
 - (void)initDownloader {
+    self.reachability = [Reachability reachabilityForInternetConnection];
+    
     self.currencies = [[NSMutableArray alloc] init];
     
     [self getSymbolsAndNames];
     [self initCurrencyPairs];
+    [self saveSymbolsAndNames];
     [self setupCurrencies];
     [self clearSymbolsAndNames];    
     
@@ -28,7 +42,27 @@
     }
     
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-    [self getTodaysExchangeRates];
+    
+    if ([self hasInternetConnection])
+        [self getTodaysExchangeRates];
+}
+
+- (BOOL)hasInternetConnection {
+    NetworkStatus internetStatus = [self.reachability currentReachabilityStatus];
+    
+    if (internetStatus == NotReachable) {
+        [self.delegate unableToDownload];
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+        return NO;
+    }
+    
+    else if (internetStatus != ReachableViaWiFi && internetStatus != ReachableViaWWAN) {
+        [self.delegate unableToDownload];
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+        return NO;
+    }
+    
+    return YES;
 }
 
 - (void)getSymbolsAndNames {
@@ -122,7 +156,7 @@
                  array = nil;
              
                  [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                     [self saveData];
+                     [self saveRates];
                      
                      [self.delegate downloadCompleted];
                      
@@ -159,9 +193,13 @@
     return NO;
 }
 
-- (void)saveData {
+- (void)saveSymbolsAndNames {
     [[NSUserDefaults standardUserDefaults] setValue:self.currencySymbols forKey:@"currencySymbols"];
     [[NSUserDefaults standardUserDefaults] setValue:self.currencyNames forKey:@"currencyNames"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (void)saveRates {
     [[NSUserDefaults standardUserDefaults] setValue:self.forex forKey:@"exchangeRates"];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }

@@ -42,9 +42,6 @@
     <classes>
         <class className="ConverterViewController" superclassName="UIViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/ConverterViewController.h"/>
-            <relationships>
-                <relationship kind="outlet" name="refreshButton" candidateClass="UIBarButtonItem"/>
-            </relationships>
         </class>
     </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
