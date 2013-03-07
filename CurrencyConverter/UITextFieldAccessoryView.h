@@ -11,6 +11,5 @@
 @interface UITextFieldAccessoryView : UIView
 
 @property (strong) UITextField *editingField;
-- (id)initWithFrame:(CGRect)frame andTextField:(UITextField *)textField;
 
 @end

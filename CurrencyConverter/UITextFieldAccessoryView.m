@@ -18,14 +18,6 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-    }
-    return self;
-}
-
-- (id)initWithFrame:(CGRect)frame andTextField:(UITextField *)textField {
-    self = [super initWithFrame:frame];
-    if (self) {
-        self.editingField = textField;
         [self setupView];
     }
     return self;

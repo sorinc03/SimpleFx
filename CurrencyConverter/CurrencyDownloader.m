@@ -176,7 +176,7 @@
 - (NSString *)formattedDate {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     
-    [dateFormatter setDateFormat:@"dd.MM.yyy HH:mm:ss"];
+    [dateFormatter setDateFormat:@"dd.MM.yyy HH:mm"];
     return [dateFormatter stringFromDate:[NSDate date]];
 }
 
