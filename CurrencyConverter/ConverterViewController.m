@@ -11,19 +11,17 @@
 #import "CurrencyCell.h"
 #import "Currency.h"
 #import "UITextFieldAccessoryView.h"
-#import "NavigationBarTitleView.h"
 #import <QuartzCore/QuartzCore.h>
 #define REFRESH_HEIGHT 52.0f
 
-@interface ConverterViewController () <CurrencyDownloaderDelegate>
+@interface ConverterViewController () <CurrencyDownloaderDelegate, UIAlertViewDelegate>
 
-@property (nonatomic) CGFloat screenHeight;
-@property (strong) UITableView *currencyTable;
-@property (strong) NSMutableDictionary *urlMappings;
-@property (strong) NSString *editingCurrency;
 @property (strong) NSString *lastUpdated;
+@property (nonatomic) CGFloat screenHeight;
+@property (strong) NSString *editingCurrency;
+@property (strong) UITableView *currencyTable;
 @property (strong) CurrencyDownloader *downloader;
-@property (strong) NavigationBarTitleView *titleView;
+@property (strong) NSMutableDictionary *urlMappings;
 @property (strong) UITextFieldAccessoryView *textFieldAccessoryView;
 
 @end
@@ -33,9 +31,7 @@
 - (id)initWithStyle:(UITableViewStyle)style {
     self = [super initWithStyle:style];
     
-    if (self) {
-        
-    }
+    if (self) {}
     
     return self;
 }
@@ -44,17 +40,12 @@
 {
     [super viewDidLoad];
     
-    [self setupURLMappings];
-    
     [self.tableView registerClass:[CurrencyCell class] forCellReuseIdentifier:@"CurrencyExchange"];
     
     self.textFieldAccessoryView = [[UITextFieldAccessoryView alloc]
-                                   initWithFrame:CGRectMake(0, self.screenHeight-44, 320, 44)];
+                                   initWithFrame:CGRectMake(0, 0, 320, 44)];
     
     self.navigationItem.title = @"Converter";
-    //self.titleView = [[NavigationBarTitleView alloc] initWithNavBarFrame:self.navigationController.navigationBar.frame];
-    
-    self.navigationItem.titleView = self.titleView;
     
     self.editingCurrency = @"";
         
@@ -71,7 +62,11 @@
 - (void)setupRefreshControl {    
     [self.refreshControl addTarget:self action:@selector(getNewRates:) forControlEvents:UIControlEventValueChanged];
     
-    self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:@"Downloading data"];
+    [self updateRefreshControlText];
+}
+
+- (void)updateRefreshControlText {    
+    self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:[self getLastUpdatedDate]];
 }
 
 - (void)getNewRates:(id)sender {
@@ -79,29 +74,60 @@
         [self.downloader getTodaysExchangeRates];
 }
 
-- (void)setupURLMappings {
-    self.urlMappings = [[NSMutableDictionary alloc] initWithDictionary:
-                        @{@"EUR" : @"Euro", @"GBP" : @"Pound_sterling", @"JPY" : @"Japanese_yen",
-                        @"AED" : @"United_Arab_Emirates_dirham", @"AUD" : @"Australian_dollar",
-                        @"CAD" : @"Canadian_dollar", @"INR" : @"Indian_rupee"}];
-}
-
 - (void)showOldData {
     [self updateValuesFrom:@"EUR" withAmount:@"1.0"];
     [self setupTableView];
 }
 
+- (void)noNewData {
+    if ([self.refreshControl isRefreshing])
+        [self.refreshControl endRefreshing];
+    [self updateRefreshControlText];
+}
+
 - (void)downloadCompleted {
     [self updateValuesFrom:@"EUR" withAmount:@"1.0"];
-    
-    [self.tableView performSelector:@selector(reloadData) withObject:nil afterDelay:0.0];
     
     if ([self.refreshControl isRefreshing]) {
         [self setupTableView];
     }
+    
+    else {
+        if (![[[NSUserDefaults standardUserDefaults] valueForKey:@"firstStart"] isEqualToString:@"Passed"])
+            [self.tableView performSelector:@selector(reloadData) withObject:nil afterDelay:0.0];
+        else {
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Updated"
+                                                            message:@"Exchange rates have been updated."
+                                                           delegate:self
+                                                  cancelButtonTitle:@"Keep current rates"
+                                                  otherButtonTitles:@"Refresh rates", nil];
+            alert.tag = 1;
+            [alert show];
+        }
+    }
+    
+    [[NSUserDefaults standardUserDefaults] setValue:@"Passed" forKey:@"firstStart"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-- (void)unableToDownload {    
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (alertView.tag == 1) {
+        switch (buttonIndex) {
+            case 0: {
+                [alertView dismissWithClickedButtonIndex:0 animated:YES];
+                break;
+            }
+                
+            case 1: {
+                [self setupTableView];
+                break;
+            }
+        }
+    }
+}
+
+- (void)unableToDownload {
+    [self.refreshControl endRefreshing];
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
                                                     message:@"Please check your internet connection and try again"
                                                    delegate:self
@@ -111,13 +137,7 @@
     [alert show];
 }
 
-- (void)refreshTableData:(id)refreshButton {
-    self.navigationItem.rightBarButtonItem = nil;
-    self.titleView.subtitleLabel.text = self.lastUpdated;
-    [self.tableView reloadData];
-}
-
-- (void)setupTableView {
+- (NSString *)getLastUpdatedDate {
     self.lastUpdated = [self.downloader.forex valueForKey:@"lastUpdated"];
     if (self.lastUpdated == nil) {
         self.lastUpdated = @"Never";
@@ -125,9 +145,14 @@
     
     self.lastUpdated = [NSString stringWithFormat:@"Last updated: %@", self.lastUpdated];
     
-    self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:self.lastUpdated];
+    return self.lastUpdated;
+}
+
+- (void)setupTableView {    
+    [self updateRefreshControlText];
     
-    [self.refreshControl endRefreshing];
+    if ([self.refreshControl isRefreshing])
+        [self.refreshControl endRefreshing];
     
     [self.tableView reloadData];
 }
@@ -146,7 +171,7 @@
     
     cell.textField.text = c.value;
     
-    cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+    cell.selectionStyle = UITableViewCellSelectionStyleGray;
     
     cell.textField.alpha = 0.0;
     

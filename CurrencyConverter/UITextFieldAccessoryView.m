@@ -24,15 +24,20 @@
 }
 
 - (void)setupView {
-    [self setBackgroundColor:[UIColor grayColor]];
-    UIButton *b = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    UIToolbar *toolbar = [[UIToolbar alloc] initWithFrame:self.frame];
+    UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc]
+                                      initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                      target:nil
+                                      action:nil];
+    UIBarButtonItem *doneButton = [[UIBarButtonItem alloc]
+                                   initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                   target:nil
+                                   action:@selector(removeAccessoryView:)];
     
-    b.frame = CGRectMake(270, 4, 40, 36);
+    [toolbar setBarStyle:UIBarStyleBlackTranslucent];
+    [toolbar setItems:[NSArray arrayWithObjects:flexibleSpace, doneButton, nil]];
     
-    [b setTitle:@"Done" forState:UIControlStateNormal];
-    [b addTarget:self action:@selector(removeAccessoryView:) forControlEvents:UIControlEventTouchUpInside];
-    
-    [self addSubview:b];
+    [self addSubview:toolbar];
 }
 
 - (void)removeAccessoryView:(id)sender {

@@ -12,11 +12,10 @@
 
 @interface CurrencyDownloader ()
 
-@property (strong) NSMutableArray *currencySymbols;
-@property (strong) NSMutableArray *currencyNames;
-@property (strong) NSMutableArray *currencyValues;
-@property (strong) NSMutableArray *currencyPairs;
 @property (strong) Reachability *reachability;
+@property (strong) NSMutableArray *currencyNames;
+@property (strong) NSMutableArray *currencyPairs;
+@property (strong) NSMutableArray *currencySymbols;
 
 @end
 
@@ -24,7 +23,6 @@
 
 - (void)initDownloader {
     self.reachability = [Reachability reachabilityForInternetConnection];
-    
     self.currencies = [[NSMutableArray alloc] init];
     
     [self getSymbolsAndNames];
@@ -142,10 +140,13 @@
              NSMutableArray *todayRates = [[NSMutableArray alloc] init];
              
              for (int i = 0; i < array.count; i+=2) {
-                 [todayRates addObject:array[i]];
+                 NSString *rate = array[i];
+                 
+                 [todayRates addObject:rate];
              }
              
              BOOL newRates = [self areNewRates:todayRates];
+             
              if (newRates || self.forex.count == 0) {
                  self.forex = [[NSMutableDictionary alloc] initWithObjects:todayRates forKeys:self.currencyPairs];
                  
@@ -163,14 +164,34 @@
                      [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
                 }];
              }
+             
+             else {
+                 [self noNewData];
+             }
          } else if ([data length] == 0 && error == nil){
-             //[self emptyReply];
-         } else if (error != nil && error.code == NSURLErrorTimedOut){ //used this NSURLErrorTimedOut from foundation error responses
-             //[self timedOut];
+             [self noNewData];
+         } else if (error != nil && error.code == NSURLErrorTimedOut) {
+             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                 [self.delegate unableToDownload];
+             }];
          } else if (error != nil){
-             //[self downloadError:error];
+             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                 [self.delegate unableToDownload];
+             }];
          }
      }];
+}
+
+- (void)noNewData {
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        NSString *date = [NSString stringWithFormat:@"%@", [self formattedDate]];
+        
+        [self.forex setValue:date forKey:@"lastUpdated"];
+        
+        [self.delegate noNewData];
+        
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+    }];
 }
 
 - (NSString *)formattedDate {
@@ -185,7 +206,7 @@
         NSString *local = [self.forex valueForKey:self.currencyPairs[i]];
         NSString *new = todayRates[i];
         
-        if ([local isEqualToString:new]) {
+        if (![local isEqualToString:new]) {
             return YES;
         }
     }

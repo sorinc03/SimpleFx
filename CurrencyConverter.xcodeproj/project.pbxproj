@@ -7,12 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B51068E116E96F9B001A51FE /* icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B51068E016E96F9B001A51FE /* icon@2x.png */; };
+		B51068E316E96FA1001A51FE /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B51068E216E96FA1001A51FE /* icon.png */; };
 		B521C50416E654F500D46151 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B521C50316E654F500D46151 /* QuartzCore.framework */; };
 		B521C50916E678E900D46151 /* 01-refresh.png in Resources */ = {isa = PBXBuildFile; fileRef = B521C50716E678E900D46151 /* 01-refresh.png */; };
 		B521C50A16E678E900D46151 /* 01-refresh@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B521C50816E678E900D46151 /* 01-refresh@2x.png */; };
 		B521C50D16E6A68600D46151 /* Currency.m in Sources */ = {isa = PBXBuildFile; fileRef = B521C50C16E6A68500D46151 /* Currency.m */; };
 		B55FF57116E75F860056D946 /* UITextFieldAccessoryView.m in Sources */ = {isa = PBXBuildFile; fileRef = B55FF57016E75F860056D946 /* UITextFieldAccessoryView.m */; };
-		B55FF57416E77FFF0056D946 /* NavigationBarTitleView.m in Sources */ = {isa = PBXBuildFile; fileRef = B55FF57316E77FFF0056D946 /* NavigationBarTitleView.m */; };
 		B55FF57716E78F090056D946 /* 02-redo.png in Resources */ = {isa = PBXBuildFile; fileRef = B55FF57516E78F090056D946 /* 02-redo.png */; };
 		B55FF57816E78F090056D946 /* 02-redo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B55FF57616E78F090056D946 /* 02-redo@2x.png */; };
 		B58D6AE516E6CB2D00E20F17 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = B58D6AE416E6CB2D00E20F17 /* Reachability.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -57,6 +58,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B51068E016E96F9B001A51FE /* icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon@2x.png"; path = "../icon@2x.png"; sourceTree = "<group>"; };
+		B51068E216E96FA1001A51FE /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = ../icon.png; sourceTree = "<group>"; };
 		B521C50316E654F500D46151 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		B521C50716E678E900D46151 /* 01-refresh.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "01-refresh.png"; sourceTree = "<group>"; };
 		B521C50816E678E900D46151 /* 01-refresh@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "01-refresh@2x.png"; sourceTree = "<group>"; };
@@ -64,8 +67,6 @@
 		B521C50C16E6A68500D46151 /* Currency.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Currency.m; sourceTree = "<group>"; };
 		B55FF56F16E75F860056D946 /* UITextFieldAccessoryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UITextFieldAccessoryView.h; sourceTree = "<group>"; };
 		B55FF57016E75F860056D946 /* UITextFieldAccessoryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UITextFieldAccessoryView.m; sourceTree = "<group>"; };
-		B55FF57216E77FFF0056D946 /* NavigationBarTitleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavigationBarTitleView.h; sourceTree = "<group>"; };
-		B55FF57316E77FFF0056D946 /* NavigationBarTitleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavigationBarTitleView.m; sourceTree = "<group>"; };
 		B55FF57516E78F090056D946 /* 02-redo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "02-redo.png"; sourceTree = "<group>"; };
 		B55FF57616E78F090056D946 /* 02-redo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "02-redo@2x.png"; sourceTree = "<group>"; };
 		B58D6AE316E6CB2C00E20F17 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
@@ -138,6 +139,8 @@
 		B58D6AE616E6CB3600E20F17 /* Graphics */ = {
 			isa = PBXGroup;
 			children = (
+				B51068E216E96FA1001A51FE /* icon.png */,
+				B51068E016E96F9B001A51FE /* icon@2x.png */,
 				B55FF57516E78F090056D946 /* 02-redo.png */,
 				B55FF57616E78F090056D946 /* 02-redo@2x.png */,
 				B521C50716E678E900D46151 /* 01-refresh.png */,
@@ -191,8 +194,6 @@
 				B5AAA9E616E206A5007FB2FF /* MainStoryboard.storyboard */,
 				B5AAA9E916E206A5007FB2FF /* ConverterViewController.h */,
 				B5AAA9EA16E206A5007FB2FF /* ConverterViewController.m */,
-				B55FF57216E77FFF0056D946 /* NavigationBarTitleView.h */,
-				B55FF57316E77FFF0056D946 /* NavigationBarTitleView.m */,
 				B5AAAA2B16E5085F007FB2FF /* CurrencyDownloader.h */,
 				B5AAAA2C16E5085F007FB2FF /* CurrencyDownloader.m */,
 				B521C50B16E6A68500D46151 /* Currency.h */,
@@ -257,9 +258,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		B5AAA9CA16E206A4007FB2FF /* CurrencyConverter */ = {
+		B5AAA9CA16E206A4007FB2FF /* Converter */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B5AAAA0316E206A5007FB2FF /* Build configuration list for PBXNativeTarget "CurrencyConverter" */;
+			buildConfigurationList = B5AAAA0316E206A5007FB2FF /* Build configuration list for PBXNativeTarget "Converter" */;
 			buildPhases = (
 				B5AAA9C716E206A4007FB2FF /* Sources */,
 				B5AAA9C816E206A4007FB2FF /* Frameworks */,
@@ -269,7 +270,7 @@
 			);
 			dependencies = (
 			);
-			name = CurrencyConverter;
+			name = Converter;
 			productName = CurrencyConverter;
 			productReference = B5AAA9CB16E206A5007FB2FF /* CurrencyConverter.app */;
 			productType = "com.apple.product-type.application";
@@ -314,7 +315,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				B5AAA9CA16E206A4007FB2FF /* CurrencyConverter */,
+				B5AAA9CA16E206A4007FB2FF /* Converter */,
 				B5AAA9F016E206A5007FB2FF /* CurrencyConverterTests */,
 			);
 		};
@@ -342,6 +343,8 @@
 				B521C50A16E678E900D46151 /* 01-refresh@2x.png in Resources */,
 				B55FF57716E78F090056D946 /* 02-redo.png in Resources */,
 				B55FF57816E78F090056D946 /* 02-redo@2x.png in Resources */,
+				B51068E116E96F9B001A51FE /* icon@2x.png in Resources */,
+				B51068E316E96FA1001A51FE /* icon.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -384,7 +387,6 @@
 				B521C50D16E6A68600D46151 /* Currency.m in Sources */,
 				B58D6AE516E6CB2D00E20F17 /* Reachability.m in Sources */,
 				B55FF57116E75F860056D946 /* UITextFieldAccessoryView.m in Sources */,
-				B55FF57416E77FFF0056D946 /* NavigationBarTitleView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -401,7 +403,7 @@
 /* Begin PBXTargetDependency section */
 		B5AAA9F716E206A5007FB2FF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = B5AAA9CA16E206A4007FB2FF /* CurrencyConverter */;
+			target = B5AAA9CA16E206A4007FB2FF /* Converter */;
 			targetProxy = B5AAA9F616E206A5007FB2FF /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -558,7 +560,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B5AAAA0316E206A5007FB2FF /* Build configuration list for PBXNativeTarget "CurrencyConverter" */ = {
+		B5AAAA0316E206A5007FB2FF /* Build configuration list for PBXNativeTarget "Converter" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B5AAAA0416E206A5007FB2FF /* Debug */,

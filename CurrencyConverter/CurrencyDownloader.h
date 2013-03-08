@@ -24,5 +24,6 @@
 - (void)unableToDownload;
 - (void)downloadCompleted;
 - (void)showOldData;
+- (void)noNewData;
 
 @end

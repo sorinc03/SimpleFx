@@ -32,7 +32,7 @@
 }
 
 - (void)setupTextField {
-    CGRect frame = CGRectMake(81, 10, 200, 25);
+    CGRect frame = CGRectMake(81, 10, 150, 25);
     self.textField = [[UITextField alloc] initWithFrame:frame];
     self.textField.textAlignment = NSTextAlignmentLeft;
     self.textField.font = [UIFont systemFontOfSize:15.0];

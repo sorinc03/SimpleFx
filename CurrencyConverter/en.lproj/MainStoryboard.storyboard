@@ -60,9 +60,6 @@
     <classes>
         <class className="ConverterViewController" superclassName="UITableViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/ConverterViewController.h"/>
-            <relationships>
-                <relationship kind="outlet" name="refreshControl" candidateClass="UIRefreshControl"/>
-            </relationships>
         </class>
         <class className="CurrencyCell" superclassName="UITableViewCell">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/CurrencyCell.h"/>
