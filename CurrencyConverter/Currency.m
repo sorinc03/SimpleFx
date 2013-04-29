@@ -1,10 +1,9 @@
-//
-//  Currency.m
-//  CurrencyConverter
-//
-//  Created by Sorin Cioban on 05/03/2013.
-//  Copyright (c) 2013 Sorin Cioban. All rights reserved.
-//
+/*
+ File: Currency.m
+ 
+ The Currency class is used to provide a Currency object containing the name, symbol and curent value for 
+ a given currency
+ */
 
 #import "Currency.h"
 

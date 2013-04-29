@@ -26,10 +26,14 @@
     [super tearDown];
 }
 
-- (void)testCurrencyAllocation {
-    Currency *c = [[Currency alloc] initWithSymbol:@"CNY" name:@"Yuan" andValue:@"1.0"];
-    STAssertTrue([c.name isEqualToString:@"Yuan"], @"Property allocation works");
+- (void)testCurrencyPairCreation {
+    CurrencyDownloader *downloader = [[CurrencyDownloader alloc] init];
     
+    downloader.currencySymbols = @[@"EUR", @"GBP", @"USD"].copy;
+    [downloader initCurrencyPairs];
+    
+    STAssertTrue([downloader.currencyPairs containsObject:@"EURGBP"], @"Currency pairing works correctly.");
+    STAssertTrue(![downloader.currencyPairs containsObject:@"EUREUR"], @"Currencies don't pair themselves (i.e, EUREUR).");
 }
 
 @end

@@ -1,10 +1,8 @@
-//
-//  CurrencyCell.m
-//  CurrencyConverter
-//
-//  Created by Sorin Cioban on 02/03/2013.
-//  Copyright (c) 2013 Sorin Cioban. All rights reserved.
-//
+/*
+ File: CurrencyCell.m
+ 
+ CurrencyCell is a custom UITableViewCell implementation containing an image, two labels and a text field
+ */
 
 #import "CurrencyCell.h"
 
@@ -15,22 +13,27 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {        
         [self setupCurrencyImage];
-        [self setupLabels];
+        [self setupLabel];
         [self setupTextField];
         
         [self addSubview:self.currencySymbolLabel];
         [self addSubview:self.currencyImage];
-        [self addSubview:self.valueLabel];
         [self addSubview:self.textField];
     }
     return self;
 }
 
+/*
+ The setupCurrencyImage function gives the UIImageView a frame and a default image
+ */
 - (void)setupCurrencyImage {
     self.currencyImage = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 66, 40)];
     self.currencyImage.image = [UIImage imageNamed:@"us-flag.jpg"];
 }
 
+/*
+ The setupTextField function initialises the textField with a frame, font, borderstyle
+ */
 - (void)setupTextField {
     CGRect frame = CGRectMake(81, 10, 150, 25);
     self.textField = [[UITextField alloc] initWithFrame:frame];
@@ -39,20 +42,26 @@
     self.textField.keyboardType = UIKeyboardTypeDecimalPad;
     self.textField.borderStyle = UITextBorderStyleRoundedRect;
     self.textField.clearButtonMode = UITextFieldViewModeWhileEditing;
-    [self.textField setBorderStyle:UITextBorderStyleRoundedRect];
-    
-    frame.origin.y -= 5;
-    frame.origin.x += 2;
-    self.valueLabel = [[UILabel alloc] initWithFrame:frame];
-    self.valueLabel.textAlignment = NSTextAlignmentLeft;
-    self.valueLabel.font = [UIFont systemFontOfSize:15.0];
 }
 
-- (void)setupLabels {
+/*
+ setupLabel, as per its name, initialises the symbol label value and frame
+ */
+- (void)setupLabel {
     self.currencySymbolLabel = [[UILabel alloc] initWithFrame:CGRectMake(83, 37, 170, 16)];
     self.currencySymbolLabel.font = [UIFont systemFontOfSize:13.0];
     self.currencySymbolLabel.textAlignment = NSTextAlignmentLeft;
     self.currencySymbolLabel.text = @"EUR - Australian Dollar";
+}
+
+/*
+ enableTextField sets the textField enabled property to YES or NO and based on this, its border to RoundedRect
+ or None
+ */
+- (void)enableTextField:(BOOL)enabled {
+    self.textField.enabled = enabled;
+    
+    self.textField.borderStyle = enabled == YES ? UITextBorderStyleRoundedRect : UITextBorderStyleNone;
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated

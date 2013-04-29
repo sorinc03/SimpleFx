@@ -11,9 +11,9 @@
 
 @interface CurrencyCell : UITableViewCell
 
-@property (strong) UILabel *valueLabel;
 @property (strong) UITextField *textField;
 @property (strong) UIImageView *currencyImage;
 @property (strong) UILabel *currencySymbolLabel;
+- (void)enableTextField:(BOOL)enabled;
 
 @end

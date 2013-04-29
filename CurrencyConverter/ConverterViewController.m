@@ -1,10 +1,10 @@
-//
-//  ViewController.m
-//  CurrencyConverter
-//
-//  Created by Sorin Cioban on 02/03/2013.
-//  Copyright (c) 2013 Sorin Cioban. All rights reserved.
-//
+/*
+ File: ConverterViewController.m
+ 
+ The ConverterViewController is a subclass of UITableViewController and is the main view controller for the app.
+ 
+ When the app first loads, we initialise the CurrencyDownloader, the table view, the UIRefreshControl and enable calculating the currencies when the user types in a UITextField through the UITextFieldDelegate
+ */
 
 #import "ConverterViewController.h"
 #import "CurrencyDownloader.h"
@@ -36,6 +36,9 @@
     return self;
 }
 
+/*
+ viewDidLoad initializes the view, registers the CurrencyCell class and initializes the CurrencyDownloader object
+ */
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -59,32 +62,51 @@
     [self setupRefreshControl];
 }
 
+/*
+ setupRefreshControl sets the action for the UIRefreshControl and it updates it calls updateRefreshControlText
+ */
 - (void)setupRefreshControl {    
     [self.refreshControl addTarget:self action:@selector(getNewRates:) forControlEvents:UIControlEventValueChanged];
     
     [self updateRefreshControlText];
 }
 
+/*
+ updateRefreshControlText sets the UIRefreshControl's attributedTitle value to the latest time new data was pulled
+ */
 - (void)updateRefreshControlText {    
     self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:[self getLastUpdatedDate]];
 }
 
+/*
+ getNewRates: is the method called by the refresh control and initialises a download of new currency data
+ provided there is an internet connection available
+ */
 - (void)getNewRates:(id)sender {
     if ([self.downloader hasInternetConnection])
         [self.downloader getTodaysExchangeRates];
 }
 
+/*
+ showOldData simply updates the values based on a value of 1.0 for EUR and then calls setupTableView
+ */
 - (void)showOldData {
     [self updateValuesFrom:@"EUR" withAmount:@"1.0"];
     [self setupTableView];
 }
 
+/*
+ noNewData is called by the downloader object if no new data has been pulled/found for any reason and stops the refresh animation for the UIRefreshControl
+ */
 - (void)noNewData {
     if ([self.refreshControl isRefreshing])
         [self.refreshControl endRefreshing];
     [self updateRefreshControlText];
 }
 
+/*
+ downloadCompleted is called when new data actually exists and it causes the table view's data to reload with the new exchange rates
+ */
 - (void)downloadCompleted {
     [self updateValuesFrom:@"EUR" withAmount:@"1.0"];
     
@@ -93,8 +115,11 @@
     }
     
     else {
-        if (![[[NSUserDefaults standardUserDefaults] valueForKey:@"firstStart"] isEqualToString:@"Passed"])
+        if (![[[NSUserDefaults standardUserDefaults] valueForKey:@"firstStart"] isEqualToString:@"Passed"]) {
             [self.tableView performSelector:@selector(reloadData) withObject:nil afterDelay:0.0];
+            [[NSUserDefaults standardUserDefaults] setValue:@"Passed" forKey:@"firstStart"];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+        }
         else {
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Updated"
                                                             message:@"Exchange rates have been updated."
@@ -105,9 +130,6 @@
             [alert show];
         }
     }
-    
-    [[NSUserDefaults standardUserDefaults] setValue:@"Passed" forKey:@"firstStart"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -126,6 +148,9 @@
     }
 }
 
+/*
+ unableToDownload is typically called from the downloader object if there is no internet connectivity available
+ */
 - (void)unableToDownload {
     [self.refreshControl endRefreshing];
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
@@ -137,6 +162,9 @@
     [alert show];
 }
 
+/*
+ getLlastUpdatedDate returns a string with the latest date the data has been updated based on the value stored in the downloader's forex object.
+ */
 - (NSString *)getLastUpdatedDate {
     self.lastUpdated = [self.downloader.forex valueForKey:@"lastUpdated"];
     if (self.lastUpdated == nil) {
@@ -148,6 +176,9 @@
     return self.lastUpdated;
 }
 
+/*
+ setupTableView calls updateRefreshControlText, stops its refreshing and then reloads the table data 
+ */
 - (void)setupTableView {    
     [self updateRefreshControlText];
     
@@ -173,27 +204,22 @@
     
     cell.selectionStyle = UITableViewCellSelectionStyleGray;
     
-    cell.textField.alpha = 0.0;
+    [cell enableTextField:NO];
     
     [cell.textField addTarget:self
                        action:@selector(textFieldTextHasChanged:)
              forControlEvents:UIControlEventEditingChanged];
     
-    cell.valueLabel.text = c.value;
-    
     return cell;
-}
-
-- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
-    //NSString *currency = self.downloader.currencySymbols[indexPath.row];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     CurrencyCell *cell = (CurrencyCell *)[tableView cellForRowAtIndexPath:indexPath
                                           ];
-    cell.valueLabel.alpha = 0.0;
-    cell.textField.alpha = 1.0;
+    
+    [cell enableTextField:YES];
+    
     [cell.textField becomeFirstResponder];
 }
 
@@ -230,11 +256,13 @@
     return NO;
 }
 
+/*
+ hideFieldShowvalue: gets the textField's superview cell and calls its enableTextField: function to enable/disable textField
+ */
 - (void)hideFieldShowValue:(UITextField *)textField {
     CurrencyCell *cell = (CurrencyCell *)textField.superview;
     
-    textField.alpha = 0.0;
-    cell.valueLabel.alpha = 1.0;
+    [cell enableTextField:NO];
 }
 
 - (void)textFieldTextHasChanged:(UITextField *)textField {
@@ -247,6 +275,9 @@
     
 }
 
+/*
+ updateValuesFrom:withAmount: simply updates the current value of a given currency in the Downloader's Currency object
+ */
 - (void)updateValuesFrom:(NSString *)currencySymbol withAmount:(NSString *)amount{
     NSInteger initialCurrencyIndex = [self getIndexForSymbol:currencySymbol];
     Currency *c = (Currency *)self.downloader.currencies[initialCurrencyIndex];
@@ -274,6 +305,9 @@
     }
 }
 
+/*
+ reloadTextFields plugs the new value for the currencies in the textFields
+ */
 - (void)reloadTextFields {
     for (int i = 0; i < self.downloader.currencies.count; i++) {
         Currency *c = (Currency *)self.downloader.currencies[i];
@@ -282,10 +316,12 @@
         CurrencyCell *cell = (CurrencyCell *)[self.tableView cellForRowAtIndexPath:path];
         
         cell.textField.text = c.value;
-        cell.valueLabel.text = c.value;
     }
 }
 
+/*
+ getIndexForSymbol returns the index a symbol is at in the currencies array (and hence, the table)
+ */
 - (NSInteger)getIndexForSymbol:(NSString *)symbol {
     for (int i = 0; i < self.downloader.currencies.count; i++) {
         Currency *c = (Currency *)self.downloader.currencies[i];

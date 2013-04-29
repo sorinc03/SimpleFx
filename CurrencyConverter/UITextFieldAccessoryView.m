@@ -1,10 +1,9 @@
-//
-//  UITextFieldAccessoryView.m
-//  CurrencyConverter
-//
-//  Created by Sorin Cioban on 06/03/2013.
-//  Copyright (c) 2013 Sorin Cioban. All rights reserved.
-//
+/*
+ File: UITextFieldAcccessoryView.m
+ 
+ The UITextFieldAccessoryView class is a subclass of UIView and is used to provide an accessory view for a given
+ textField when the keyboard is displayed
+ */
 
 #import "UITextFieldAccessoryView.h"
 
@@ -23,6 +22,10 @@
     return self;
 }
 
+/*
+ setupView adds a UIToolbar as a subview
+ The UIToolbar contains a flexible space item and a done button item
+ */
 - (void)setupView {
     UIToolbar *toolbar = [[UIToolbar alloc] initWithFrame:self.frame];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc]
@@ -40,6 +43,9 @@
     [self addSubview:toolbar];
 }
 
+/*
+ The removeAccessoryView: method is called when the UIBarButtonItem is tapped and it makes the keyboard disappear
+ */
 - (void)removeAccessoryView:(id)sender {
     [self.editingField resignFirstResponder];
 }

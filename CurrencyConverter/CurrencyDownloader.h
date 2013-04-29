@@ -10,12 +10,16 @@
 
 @interface CurrencyDownloader : NSObject
 
+@property (strong) NSMutableArray *currencyNames;
+@property (strong) NSMutableArray *currencySymbols;
+@property (strong) NSMutableArray *currencyPairs;
 @property (strong) NSMutableArray *currencies;
 @property (strong) NSMutableDictionary *forex;
 @property (nonatomic, weak) id delegate;
 - (void)initDownloader;
 - (void)getTodaysExchangeRates;
 - (BOOL)hasInternetConnection;
+- (void)initCurrencyPairs;
 
 @end
 
