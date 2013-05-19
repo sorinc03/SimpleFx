@@ -5,6 +5,7 @@
  */
 
 #import "CurrencyCell.h"
+#import <QuartzCore/QuartzCore.h>
 
 @implementation CurrencyCell
 
@@ -27,7 +28,10 @@
  The setupCurrencyImage function gives the UIImageView a frame and a default image
  */
 - (void)setupCurrencyImage {
+    CGFloat gray = 162.0/255.0;
     self.currencyImage = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 66, 40)];
+    [self.currencyImage.layer setBorderColor:[[UIColor colorWithRed:gray green:gray blue:gray alpha:1.0] CGColor]];
+    [self.currencyImage.layer setBorderWidth:2.0];
     self.currencyImage.image = [UIImage imageNamed:@"us-flag.jpg"];
 }
 

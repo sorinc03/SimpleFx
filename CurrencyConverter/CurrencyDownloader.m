@@ -16,6 +16,7 @@
 @interface CurrencyDownloader ()
 
 @property (strong) Reachability *reachability;
+@property (strong) NSDateFormatter *dateFormatter;
 
 @end
 
@@ -45,6 +46,10 @@
     }
     
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    
+    self.dateFormatter = [[NSDateFormatter alloc] init];
+    
+    [self.dateFormatter setDateFormat:@"dd.MM.yyy HH:mm"];
     
     if ([self hasInternetConnection])
         [self getTodaysExchangeRates];
@@ -134,11 +139,91 @@
     return YES;
 }
 
+- (void)getECBExchangeRates {
+    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+    
+    NSString *apiString = @"http://www.airplanesandapps.com/CurrencyApp/currencies.php";
+    
+    NSURL *url = [NSURL URLWithString:apiString];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:NSURLCacheStorageAllowed timeoutInterval:60.0];
+    
+    [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+     {
+         if ([data length] > 0 && error == nil){
+             NSArray *jsonData = [
+                                  [
+                                   [NSString alloc] initWithData:data
+                                                        encoding:NSUTF8StringEncoding]
+                                  componentsSeparatedByString:@"sep"
+                                  ];
+             
+             NSDictionary *rates = [NSJSONSerialization JSONObjectWithData:[jsonData[0] dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:nil];
+             NSDictionary *names = [NSJSONSerialization JSONObjectWithData:[jsonData[1] dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:nil];
+             
+             NSLog(@"%@", rates);
+             NSLog(@"%@", names);
+             
+             /*NSString *exchangeRates = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+             
+             NSCharacterSet *charSet = [NSCharacterSet whitespaceAndNewlineCharacterSet];
+             exchangeRates = [exchangeRates stringByTrimmingCharactersInSet:charSet];
+             
+             NSMutableArray *array = [exchangeRates componentsSeparatedByCharactersInSet:charSet].copy;
+             
+             NSMutableArray *todayRates = [[NSMutableArray alloc] init];
+             
+             for (int i = 0; i < array.count; i+=2) {
+                 NSString *rate = array[i];
+                 
+                 [todayRates addObject:rate];
+             }
+             
+             BOOL newRates = [self areNewRates:todayRates];
+             
+             if (newRates || self.forex.count == 0) {
+                 self.forex = [[NSMutableDictionary alloc] initWithObjects:todayRates forKeys:self.currencyPairs];
+                 
+                 NSString *date = [NSString stringWithFormat:@"%@", [self formattedDate]];
+                 
+                 [self.forex setValue:date forKey:@"lastUpdated"];
+                 
+                 array = nil;
+                 
+                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                     [self saveRates];
+                     
+                     [self.delegate downloadCompleted];
+                     
+                     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+                 }];
+             }
+             
+             else {
+                 [self noNewData];
+             }*/
+         } else if ([data length] == 0 && error == nil){
+             [self noNewData];
+         } else if (error != nil && error.code == NSURLErrorTimedOut) {
+             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                 [self.delegate unableToDownload];
+             }];
+         } else if (error != nil){
+             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                 [self.delegate unableToDownload];
+             }];
+         }
+     }];
+
+}
+
 /*
  getTodaysExchangeRates sets up an asynchronous request for the latest exchange rate data
  when it finishes, it notifies the CurrencyDownloader delegate that new data has been retrieved
  */
 - (void)getTodaysExchangeRates {
+    [self getECBExchangeRates];
+    
     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     
     NSString *apiString = @"http://quote.yahoo.com/d/quotes.csv?f=l1";
@@ -228,10 +313,7 @@
  formattedDate returns a string for the current date and time
  */
 - (NSString *)formattedDate {
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    
-    [dateFormatter setDateFormat:@"dd.MM.yyy HH:mm"];
-    return [dateFormatter stringFromDate:[NSDate date]];
+    return [self.dateFormatter stringFromDate:[NSDate date]];
 }
 
 /*
