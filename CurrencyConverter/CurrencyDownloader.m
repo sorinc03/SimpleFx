@@ -32,16 +32,12 @@
     self.currencies = [[NSMutableArray alloc] init];
     
     [self getSymbolsAndNames];
-    [self initCurrencyPairs];
-    [self saveSymbolsAndNames];
-    [self setupCurrencies];
-    [self clearSymbolsAndNames];    
     
     NSUserDefaults *storedData = [NSUserDefaults standardUserDefaults];
     
-    self.forex = [storedData valueForKey:@"exchangeRates"];
+    self.rates = [storedData valueForKey:@"rates"];
     
-    if (self.forex.count > 0) {
+    if (self.rates.count > 0) {
         [self.delegate showOldData];
     }
     
@@ -52,7 +48,7 @@
     [self.dateFormatter setDateFormat:@"dd.MM.yyy HH:mm"];
     
     if ([self hasInternetConnection])
-        [self getTodaysExchangeRates];
+        [self getECBExchangeRates];
 }
 
 /*
@@ -64,12 +60,16 @@
     self.currencySymbols = [storedData valueForKey:@"currencySymbols"];
     
     if (self.currencySymbols == nil)
-        self.currencySymbols = [[NSMutableArray alloc] initWithArray:@[@"EUR", @"USD", @"GBP", @"INR", @"AUD", @"CAD", @"AED", @"JPY"]];
+        self.currencySymbols = [[NSMutableArray alloc] init];
     
     self.currencyNames = [storedData valueForKey:@"currencyNames"];
     
     if (self.currencyNames == nil)
-        self.currencyNames = [[NSMutableArray alloc] initWithArray:@[@"Euro", @"US Dollar", @"British Pound", @"Indian Rupee", @"Australian Dollar", @"Canadian Dollar", @"Emirate Dirham", @"Japanese Yen"]];
+        self.currencyNames = [[NSMutableArray alloc] init];
+    
+    if (self.currencyNames.count && self.currencySymbols.count) {
+        [self setupCurrencies];
+    }
 }
 
 /*
@@ -85,24 +85,44 @@
  will have a default value of 0.0
  */
 - (void)setupCurrencies {
+    self.currencies = [[NSMutableArray alloc] init];
     NSString *value = @"1.0";
     
-    for (int i = 0; i < self.currencyNames.count; i++) {
+    bool getValueFromRates = self.rates.count == self.currencySymbols.count+1 ? YES : NO;
+    
+    for (int i = 0; i < self.currencySymbols.count; i++) {
+        if (getValueFromRates) {
+            value = [self.rates valueForKey:self.currencySymbols[i]];
+            NSString *mainCurrencyRate = [self.rates valueForKey:[self.delegate getMainCurrency]];
+            
+            value = [NSString stringWithFormat:@"%.4f", value.floatValue/mainCurrencyRate.floatValue];
+        }
+        
         Currency *c = [[Currency alloc] initWithSymbol:self.currencySymbols[i]
                                                   name:self.currencyNames[i]
                                               andValue:value];
         
-        value = @"0.0";
         
         [self.currencies addObject:c];
     }
+}
+
+- (void)resetTableForMainCurrency {
+    NSMutableDictionary *names = [[NSMutableDictionary alloc] initWithObjects:self.currencyNames forKeys:self.currencySymbols];
+    
+    [self orderTableForMainCurrency:self.rates forNames:names];
+    
+    [self saveSymbolsAndNames];
+    
+    [self setupCurrencies];
+    
+    [self.delegate resetTable];
 }
 
 /*
  The initCurrencyPairs function goes through the list of currencySymbols and sets up pairs (i.e, EURUSD, EURGBP etc.)
  */
 - (void)initCurrencyPairs {
-    self.forex = [[NSMutableDictionary alloc] init];
     self.currencyPairs = [[NSMutableArray alloc] init];
     
     for (int i = 0; i < self.currencySymbols.count; i++) {
@@ -158,37 +178,29 @@
                                   componentsSeparatedByString:@"sep"
                                   ];
              
-             NSDictionary *rates = [NSJSONSerialization JSONObjectWithData:[jsonData[0] dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:nil];
-             NSDictionary *names = [NSJSONSerialization JSONObjectWithData:[jsonData[1] dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:nil];
+             NSMutableDictionary *todayRates = [NSMutableDictionary dictionaryWithDictionary:[NSJSONSerialization JSONObjectWithData:[jsonData[0] dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:nil]];
+             [todayRates setValue:@"1.0" forKey:@"EUR"];
+             NSMutableDictionary *names = [NSMutableDictionary dictionaryWithDictionary:[NSJSONSerialization JSONObjectWithData:[jsonData[1] dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:nil]];
+             [names setValue:@"Euro" forKey:@"EUR"];
              
-             NSLog(@"%@", rates);
-             NSLog(@"%@", names);
-             
-             /*NSString *exchangeRates = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-             
-             NSCharacterSet *charSet = [NSCharacterSet whitespaceAndNewlineCharacterSet];
-             exchangeRates = [exchangeRates stringByTrimmingCharactersInSet:charSet];
-             
-             NSMutableArray *array = [exchangeRates componentsSeparatedByCharactersInSet:charSet].copy;
-             
-             NSMutableArray *todayRates = [[NSMutableArray alloc] init];
-             
-             for (int i = 0; i < array.count; i+=2) {
-                 NSString *rate = array[i];
+             if (self.currencySymbols.count == 0) {
+                 [self orderTableForMainCurrency:todayRates forNames:names];
                  
-                 [todayRates addObject:rate];
-             }
-             
+                 [self saveSymbolsAndNames];
+             }         
+         
              BOOL newRates = [self areNewRates:todayRates];
              
-             if (newRates || self.forex.count == 0) {
-                 self.forex = [[NSMutableDictionary alloc] initWithObjects:todayRates forKeys:self.currencyPairs];
+             if (newRates || self.rates.count == 0) {
+                 self.rates = [[NSMutableDictionary alloc] initWithDictionary:todayRates];
                  
                  NSString *date = [NSString stringWithFormat:@"%@", [self formattedDate]];
                  
-                 [self.forex setValue:date forKey:@"lastUpdated"];
+                 [self.rates setValue:date forKey:@"lastUpdated"];
                  
-                 array = nil;
+                 if (self.currencyNames.count) {
+                     [self setupCurrencies];
+                 }
                  
                  [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                      [self saveRates];
@@ -201,7 +213,8 @@
              
              else {
                  [self noNewData];
-             }*/
+             }
+             
          } else if ([data length] == 0 && error == nil){
              [self noNewData];
          } else if (error != nil && error.code == NSURLErrorTimedOut) {
@@ -217,80 +230,52 @@
 
 }
 
-/*
- getTodaysExchangeRates sets up an asynchronous request for the latest exchange rate data
- when it finishes, it notifies the CurrencyDownloader delegate that new data has been retrieved
- */
-- (void)getTodaysExchangeRates {
-    [self getECBExchangeRates];
+- (void)orderTableForMainCurrency:(NSMutableDictionary *)orderRates forNames:(NSMutableDictionary *)names {
+    self.currencySymbols = [[NSMutableArray alloc] initWithArray:[[orderRates allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)]];
     
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+    if ([self.currencySymbols containsObject:@"lastUpdated"])
+        [self.currencySymbols removeObject:@"lastUpdated"];
     
-    NSString *apiString = @"http://quote.yahoo.com/d/quotes.csv?f=l1";
+    self.currencyNames = [[NSMutableArray alloc] initWithCapacity:self.currencySymbols.count];
     
-    for (int i = 0; i < self.currencyPairs.count; i++) {
-        NSString *stringToInsertToAPI = [NSString stringWithFormat:@"&s=%@=X", self.currencyPairs[i]];
+    int index = 0;
+    for (int i = 0; i < self.currencySymbols.count; i++) {
+        if ([self.currencySymbols[i] isEqualToString:[self.delegate getMainCurrency]]) {
+            index = i;
+        }
         
-        apiString = [apiString stringByAppendingString:stringToInsertToAPI];
+        if ([names valueForKey:self.currencySymbols[i]] != nil) {
+            
+            [self.currencyNames addObject:[names valueForKey:self.currencySymbols[i]]];
+            //NSLog(@"%@", self.currencyNames);
+        }
     }
     
-    NSURL *url = [NSURL URLWithString:apiString];
+    NSString *name = self.currencyNames[index];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:NSURLCacheStorageAllowed timeoutInterval:60.0];
+    NSString *symbol = self.currencySymbols[index];
     
-    [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
-     {
-         if ([data length] > 0 && error == nil){
-             NSString *exchangeRates = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-             
-             NSCharacterSet *charSet = [NSCharacterSet whitespaceAndNewlineCharacterSet];
-             exchangeRates = [exchangeRates stringByTrimmingCharactersInSet:charSet];
-             
-             NSMutableArray *array = [exchangeRates componentsSeparatedByCharactersInSet:charSet].copy;
-             
-             NSMutableArray *todayRates = [[NSMutableArray alloc] init];
-             
-             for (int i = 0; i < array.count; i+=2) {
-                 NSString *rate = array[i];
-                 
-                 [todayRates addObject:rate];
-             }
-             
-             BOOL newRates = [self areNewRates:todayRates];
-             
-             if (newRates || self.forex.count == 0) {
-                 self.forex = [[NSMutableDictionary alloc] initWithObjects:todayRates forKeys:self.currencyPairs];
-                 
-                 NSString *date = [NSString stringWithFormat:@"%@", [self formattedDate]];
-                 
-                 [self.forex setValue:date forKey:@"lastUpdated"];
-             
-                 array = nil;
-             
-                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                     [self saveRates];
-                     
-                     [self.delegate downloadCompleted];
-                     
-                     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-                }];
-             }
-             
-             else {
-                 [self noNewData];
-             }
-         } else if ([data length] == 0 && error == nil){
-             [self noNewData];
-         } else if (error != nil && error.code == NSURLErrorTimedOut) {
-             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                 [self.delegate unableToDownload];
-             }];
-         } else if (error != nil){
-             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                 [self.delegate unableToDownload];
-             }];
-         }
-     }];
+    [self.currencyNames removeObject:name];
+    [self.currencySymbols removeObject:symbol];
+    
+    NSMutableArray *symbolArray = [NSMutableArray arrayWithObject:symbol];
+    NSMutableArray *nameArray = [NSMutableArray arrayWithObject:name];
+    
+    [symbolArray addObjectsFromArray:self.currencySymbols];
+    [nameArray addObjectsFromArray:self.currencyNames];
+    
+    self.currencyNames = nameArray;
+    self.currencySymbols = symbolArray;
+}
+
+- (BOOL)areNewRates:(NSDictionary *)todayRates {
+    for (NSString *key in todayRates.allKeys) {
+        if (![[self.rates valueForKey:key] isEqualToString:[todayRates valueForKey:key]]) {
+            return YES;
+        }
+    }
+    
+    return NO;
 }
 
 /*
@@ -301,7 +286,7 @@
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         NSString *date = [NSString stringWithFormat:@"%@", [self formattedDate]];
         
-        [self.forex setValue:date forKey:@"lastUpdated"];
+        [self.rates setValue:date forKey:@"lastUpdated"];
         
         [self.delegate noNewData];
         
@@ -317,22 +302,6 @@
 }
 
 /*
- areNewRates: checks whether the pulled rates are the same as the old ones or different
- */
-- (BOOL)areNewRates:(NSMutableArray *)todayRates {
-    for (int i = 0; i < todayRates.count; i++) {
-        NSString *local = [self.forex valueForKey:self.currencyPairs[i]];
-        NSString *new = todayRates[i];
-        
-        if (![local isEqualToString:new]) {
-            return YES;
-        }
-    }
-    
-    return NO;
-}
-
-/*
  saveSymbolsAndNames stores the currency names and symbols in NSUserDefaults
  */
 - (void)saveSymbolsAndNames {
@@ -345,7 +314,7 @@
  saveRates stores the latest currency exchange rates NSUserDefaults
  */
 - (void)saveRates {
-    [[NSUserDefaults standardUserDefaults] setValue:self.forex forKey:@"exchangeRates"];
+    [[NSUserDefaults standardUserDefaults] setValue:self.rates forKey:@"rates"];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 

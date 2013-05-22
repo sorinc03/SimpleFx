@@ -52,7 +52,7 @@
  setupLabel, as per its name, initialises the symbol label value and frame
  */
 - (void)setupLabel {
-    self.currencySymbolLabel = [[UILabel alloc] initWithFrame:CGRectMake(83, 37, 170, 16)];
+    self.currencySymbolLabel = [[UILabel alloc] initWithFrame:CGRectMake(83, 37, 220, 16)];
     self.currencySymbolLabel.font = [UIFont systemFontOfSize:13.0];
     self.currencySymbolLabel.textAlignment = NSTextAlignmentLeft;
     self.currencySymbolLabel.text = @"EUR - Australian Dollar";

@@ -14,12 +14,13 @@
 @property (strong) NSMutableArray *currencySymbols;
 @property (strong) NSMutableArray *currencyPairs;
 @property (strong) NSMutableArray *currencies;
-@property (strong) NSMutableDictionary *forex;
+@property (strong) NSMutableDictionary *rates;
 @property (nonatomic, weak) id delegate;
 - (void)initDownloader;
-- (void)getTodaysExchangeRates;
 - (BOOL)hasInternetConnection;
 - (void)initCurrencyPairs;
+- (void)getECBExchangeRates;
+- (void)resetTableForMainCurrency;
 
 @end
 
@@ -29,5 +30,7 @@
 - (void)downloadCompleted;
 - (void)showOldData;
 - (void)noNewData;
+- (void)resetTable;
+- (NSString *)getMainCurrency;
 
 @end
