@@ -144,7 +144,7 @@
  downloadCompleted is called when new data actually exists and it causes the table view's data to reload with the new exchange rates
  */
 - (void)downloadCompleted {
-    [self updateValuesFrom:@"EUR" withAmount:@"1.0"];
+    [self updateValuesFrom:self.mainCurrency withAmount:@"1.0"];
     
     if ([self.refreshControl isRefreshing]) {
         [self setupTableView];
@@ -225,7 +225,7 @@
     if ([self.refreshControl isRefreshing])
         [self.refreshControl endRefreshing];
     
-    //[self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
     //[self.tableView setContentOffset:CGPointMake(0, 0) animated:YES];
     [self.tableView performSelector:@selector(reloadData) withObject:nil afterDelay:0.0];
 }
